@@ -143,7 +143,7 @@ function Section:AddToggle(opts)
     local component = make("Frame", {
         Name = "Toggle_Component",
         BackgroundTransparency = 1,
-        Size = UDim2.new(1, -20, 0, 26),
+        Size = UDim2.new(1, 0, 0, 26),
     })
 
     local box = make("Frame", {
@@ -151,7 +151,7 @@ function Section:AddToggle(opts)
         AnchorPoint = Vector2.new(0, 0.5),
         BackgroundColor3 = COLOR_TOGGLE_OFF,
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 10, 0.5, 0),
+        Position = UDim2.new(0, 9, 0.5, 0),
         Size = UDim2.fromOffset(16, 16),
         Parent = component,
     })
@@ -179,7 +179,7 @@ function Section:AddToggle(opts)
         AutomaticSize = Enum.AutomaticSize.XY,
         BackgroundTransparency = 1,
         FontFace = FONT,
-        Position = UDim2.new(0, 34, 0.5, 0),
+        Position = UDim2.new(0, 33, 0.5, 0),
         Size = UDim2.fromOffset(1, 1),
         Text = name,
         TextColor3 = COLOR_LABEL_OFF,
@@ -318,14 +318,14 @@ function Tab:CreateSection(opts)
 
     make("UIListLayout", {
         FillDirection = Enum.FillDirection.Vertical,
-        HorizontalAlignment = Enum.HorizontalAlignment.Center,
-        Padding = UDim.new(0, 4),
+        HorizontalAlignment = Enum.HorizontalAlignment.Left,
+        Padding = UDim.new(0, 2),
         SortOrder = Enum.SortOrder.LayoutOrder,
         Parent = holder,
     })
 
     make("UIPadding", {
-        PaddingTop = UDim.new(0, 8),
+        PaddingTop = UDim.new(0, 6),
         PaddingBottom = UDim.new(0, 10),
         PaddingLeft = UDim.new(0, 0),
         PaddingRight = UDim.new(0, 0),
@@ -399,10 +399,6 @@ function Window:SelectTab(index)
 
     self.SelectedIndex = index
     self:_moveIndicator(newTab, oldTab ~= nil)
-
-    if self.Indicator.Visible == false then
-        self.Indicator.Visible = true
-    end
 end
 
 function Window:CreateTab(opts)
@@ -638,16 +634,17 @@ function ElectroLib:CreateWindow(opts)
         Parent = tabsList,
     })
 
+    local initialIndicatorX = TABS_PAD_LEFT + TAB_WIDTH * 0.5
     local indicator = make("Frame", {
         Name = "Indicator",
         AnchorPoint = Vector2.new(0.5, 1),
         BackgroundColor3 = accent,
         BackgroundTransparency = 0,
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 0, 1, 0),
+        Position = UDim2.new(0, initialIndicatorX, 1, 0),
         Size = UDim2.fromOffset(53, 21),
-        Visible = false,
-        ZIndex = 2,
+        Visible = true,
+        ZIndex = 3,
         Parent = tabsWrapper,
     })
     make("UICorner", { Parent = indicator })
@@ -661,6 +658,7 @@ function ElectroLib:CreateWindow(opts)
         ImageTransparency = 0.4,
         Position = UDim2.fromScale(0.5, 0.229055),
         Size = UDim2.fromOffset(96, 43),
+        ZIndex = 2,
         Parent = indicator,
     })
 
