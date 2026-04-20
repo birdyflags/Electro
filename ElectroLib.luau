@@ -296,17 +296,6 @@ function Tab:CreateSection(opts)
         Parent = header,
     })
 
-    make("ImageLabel", {
-        Name = "Arrow_Icon",
-        AnchorPoint = Vector2.new(1, 0.5),
-        BackgroundTransparency = 1,
-        Image = "rbxassetid://133540734301865",
-        Position = UDim2.new(1, -12, 0.5, 0),
-        ScaleType = Enum.ScaleType.Fit,
-        Size = UDim2.fromOffset(16, 16),
-        Parent = header,
-    })
-
     local holder = make("Frame", {
         Name = "Holder",
         AutomaticSize = Enum.AutomaticSize.Y,
@@ -363,7 +352,7 @@ end
 
 function Window:_moveIndicator(tab, animate)
     local x = self:_tabCenterX(tab)
-    local target = UDim2.new(0, x, 1, 0)
+    local target = UDim2.new(0, x, 1, 15)
     if animate then
         tween(self.Indicator, TWEEN_MED, { Position = target })
     else
@@ -641,26 +630,13 @@ function ElectroLib:CreateWindow(opts)
         BackgroundColor3 = accent,
         BackgroundTransparency = 0,
         BorderSizePixel = 0,
-        Position = UDim2.new(0, initialIndicatorX, 1, 0),
-        Size = UDim2.fromOffset(53, 21),
+        Position = UDim2.new(0, initialIndicatorX, 1, 15),
+        Size = UDim2.fromOffset(40, 21),
         Visible = true,
         ZIndex = 3,
         Parent = tabsWrapper,
     })
-    make("UICorner", { Parent = indicator })
-
-    make("ImageLabel", {
-        Name = "Glow",
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        BackgroundTransparency = 1,
-        Image = "rbxassetid://83933299080110",
-        ImageColor3 = accent,
-        ImageTransparency = 0.4,
-        Position = UDim2.fromScale(0.5, 0.229055),
-        Size = UDim2.fromOffset(96, 43),
-        ZIndex = 2,
-        Parent = indicator,
-    })
+    make("UICorner", { CornerRadius = UDim.new(1, 0), Parent = indicator })
 
     local pageContainer = make("Frame", {
         Name = "PageContainer",
