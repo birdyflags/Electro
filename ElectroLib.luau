@@ -292,8 +292,8 @@ function Section:AddSlider(opts)
 	make("UICorner", { CornerRadius = UDim.new(1, 0), Parent = fill })
 	make("UIGradient", {
 		Color = ColorSequence.new({
-			ColorSequenceKeypoint.new(0, palette.accentDim),
-			ColorSequenceKeypoint.new(1, accent),
+			ColorSequenceKeypoint.new(0, accent),
+			ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 165, 100)),
 		}),
 		Parent = fill,
 	})
@@ -708,6 +708,7 @@ function ElectroLib:CreateWindow(opts)
 		AnchorPoint = Vector2.new(0.5, 1),
 		BackgroundColor3 = accent,
 		BorderSizePixel = 0,
+		ClipsDescendants = true,
 		Position = UDim2.new(0, initX, 1, 15),
 		Size = UDim2.fromOffset(40, 21),
 		ZIndex = 4,
@@ -719,10 +720,10 @@ function ElectroLib:CreateWindow(opts)
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		BackgroundTransparency = 1,
 		Image = "rbxassetid://83933299080110",
-		ImageColor3 = accent,
-		ImageTransparency = 0.25,
-		Position = UDim2.fromScale(0.5, 0.229),
-		Size = UDim2.fromOffset(100, 48),
+		ImageColor3 = Color3.fromRGB(255, 170, 110),
+		ImageTransparency = 0.15,
+		Position = UDim2.fromScale(0.5, 0.5),
+		Size = UDim2.fromOffset(70, 34),
 		Parent = indicator,
 	})
 
