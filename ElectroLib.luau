@@ -1,4 +1,5 @@
-
+--!nocheck
+-- ElectroLib - themed UI for ELECTRO.FUN scripts.
 
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -454,14 +455,11 @@ end
 
 function Window:_moveIndicator(tab, animate)
 	local x = self:_resolveCenterX(tab)
-	local pillPos = UDim2.new(0, x, 1, 15)
-	local glowPos = UDim2.new(0, x, 0, 32)
+	local target = UDim2.new(0, x, 1, 15)
 	if animate then
-		play(self._indicator, MED, { Position = pillPos })
-		play(self._indicatorGlow, MED, { Position = glowPos })
+		play(self._indicator, MED, { Position = target })
 	else
-		self._indicator.Position = pillPos
-		self._indicatorGlow.Position = glowPos
+		self._indicator.Position = target
 	end
 end
 
@@ -684,21 +682,7 @@ function ElectroLib:CreateWindow(opts)
 		Parent = header,
 	})
 
-	-- Glow sits BEHIND the tab icons (lower Z), pill sits in front.
 	local initX = TABS_LPAD + TAB_W * 0.5
-
-	local indicatorGlow = make("ImageLabel", {
-		Name = "IndicatorGlow",
-		AnchorPoint = Vector2.new(0.5, 0.5),
-		BackgroundTransparency = 1,
-		Image = "rbxassetid://83933299080110",
-		ImageColor3 = accent,
-		ImageTransparency = 0.25,
-		Position = UDim2.new(0, initX, 0, 32),
-		Size = UDim2.fromOffset(130, 90),
-		ZIndex = 1,
-		Parent = tabsWrap,
-	})
 
 	local tabsList = make("Frame", {
 		Name = "TabsList",
@@ -730,6 +714,17 @@ function ElectroLib:CreateWindow(opts)
 		Parent = tabsWrap,
 	})
 	make("UICorner", { CornerRadius = UDim.new(1, 0), Parent = indicator })
+	make("ImageLabel", {
+		Name = "Glow",
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		BackgroundTransparency = 1,
+		Image = "rbxassetid://83933299080110",
+		ImageColor3 = accent,
+		ImageTransparency = 0.25,
+		Position = UDim2.fromScale(0.5, 0.229),
+		Size = UDim2.fromOffset(100, 48),
+		Parent = indicator,
+	})
 
 	local pages = make("Frame", {
 		Name = "Pages",
@@ -741,17 +736,16 @@ function ElectroLib:CreateWindow(opts)
 	})
 
 	local window = setmetatable({
-		Accent          = accent,
-		_gui            = gui,
-		_root           = root,
-		_header         = header,
-		_tabsWrap       = tabsWrap,
-		_tabsList       = tabsList,
-		_indicator      = indicator,
-		_indicatorGlow  = indicatorGlow,
-		_pages          = pages,
-		_tabs           = {},
-		_selected       = 0,
+		Accent     = accent,
+		_gui       = gui,
+		_root      = root,
+		_header    = header,
+		_tabsWrap  = tabsWrap,
+		_tabsList  = tabsList,
+		_indicator = indicator,
+		_pages     = pages,
+		_tabs      = {},
+		_selected  = 0,
 	}, Window)
 
 	gui.Parent = host()
