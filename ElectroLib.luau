@@ -180,7 +180,7 @@ function Library:Init(title)
         tab.Name = "Tab"
         tab.BackgroundColor3 = Color3.fromRGB(247, 247, 247)
         tab.BackgroundTransparency = 0.9
-        tab.ClipsDescendants = true
+        tab.ClipsDescendants = false -- FIX: Must be false so the indicator isn't cut off!
         tab.Size = UDim2.fromOffset(55, 60)
         tab.Text = ""
         tab.AutoButtonColor = false
@@ -281,13 +281,14 @@ function Library:Init(title)
         if not self.FirstTab then
             self.FirstTab = tabData
             
-            -- Parent to SidebarAnother to prevent ClipsDescendants from hiding it when sliding
+            -- Parent to the first Tab just like the UI.lua raw dump.
             local lINERTAB1 = Instance.new("Frame")
             lINERTAB1.Name = "LINERTAB1"
             lINERTAB1.AnchorPoint = Vector2.new(1, 0.5)
             lINERTAB1.BackgroundColor3 = Color3.fromRGB(254, 254, 254)
+            lINERTAB1.Position = UDim2.fromScale(1.41818, 0.5)
             lINERTAB1.Size = UDim2.fromOffset(27, 33)
-            lINERTAB1.Parent = self.SidebarAnother
+            lINERTAB1.Parent = tab
 
             local uICorner3 = Instance.new("UICorner")
             uICorner3.Name = "UICorner"
@@ -345,9 +346,8 @@ function Library:Init(title)
             self.CurrentTab = tabData
 
             if self.LinerTab then
-                local relativeY = tab.AbsolutePosition.Y - self.SidebarAnother.AbsolutePosition.Y
                 TweenService:Create(self.LinerTab, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                    Position = UDim2.new(1, 0, 0, relativeY + (tab.AbsoluteSize.Y / 2) - (self.LinerTab.AbsoluteSize.Y / 2))
+                    Position = UDim2.new(1.41818, 0, 0.5, tab.AbsolutePosition.Y - self.LinerTab.Parent.AbsolutePosition.Y)
                 }):Play()
             end
         end)
@@ -831,11 +831,23 @@ function Library:Init(title)
                 imageLabel1.AnchorPoint = Vector2.new(0.5, 0.5)
                 imageLabel1.BackgroundTransparency = 1
                 imageLabel1.Image = "rbxassetid://112243474448065"
-                imageLabel1.ImageColor3 = Color3.fromRGB(255, 135, 66)
+                imageLabel1.ImageColor3 = Color3.fromRGB(255, 255, 255)
                 imageLabel1.Position = UDim2.new(0.5, 2, 0.5, 0)
                 imageLabel1.ScaleType = Enum.ScaleType.Fit
                 imageLabel1.Size = UDim2.fromOffset(20, 20)
                 imageLabel1.Parent = iconHolder1
+                
+                local iconGradient = Instance.new("UIGradient")
+                iconGradient.Color = ColorSequence.new({
+                    ColorSequenceKeypoint.new(0, Color3.fromRGB(235, 100, 52)),
+                    ColorSequenceKeypoint.new(0.313149, Color3.fromRGB(243, 131, 39)),
+                    ColorSequenceKeypoint.new(0.536332, Color3.fromRGB(255, 157, 0)),
+                    ColorSequenceKeypoint.new(0.647059, Color3.fromRGB(255, 157, 0)),
+                    ColorSequenceKeypoint.new(1, Color3.fromRGB(235, 100, 52)),
+                })
+                iconGradient.Rotation = 70
+                iconGradient.Enabled = false
+                iconGradient.Parent = imageLabel1
 
                 local inline = Instance.new("Frame")
                 inline.Name = "Inline"
@@ -859,6 +871,8 @@ function Library:Init(title)
                 holder3.MouseButton1Click:Connect(function()
                     binding = true
                     value1.Text = "..."
+                    iconGradient.Enabled = true
+                    imageLabel1.ImageColor3 = Color3.fromRGB(255, 255, 255)
                 end)
                 
                 mouse = Players.LocalPlayer:GetMouse()
@@ -866,6 +880,7 @@ function Library:Init(title)
                     if binding then
                         binding = false
                         value1.Text = string.upper(key)
+                        iconGradient.Enabled = false
                         if callback then callback(string.upper(key)) end
                     end
                 end)
@@ -997,13 +1012,7 @@ function Library:Init(title)
             self.CurrentTab = tabData
 
             if self.LinerTab then
-                task.spawn(function()
-                    local RunService = game:GetService("RunService")
-                    RunService.RenderStepped:Wait()
-                    RunService.RenderStepped:Wait()
-                    local relativeY = tab.AbsolutePosition.Y - self.SidebarAnother.AbsolutePosition.Y
-                    self.LinerTab.Position = UDim2.new(1, 0, 0, relativeY + (tab.AbsoluteSize.Y / 2) - (self.LinerTab.AbsoluteSize.Y / 2))
-                end)
+                self.LinerTab.Position = UDim2.fromScale(1.41818, 0.5)
             end
         end
     end
