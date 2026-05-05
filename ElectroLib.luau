@@ -66,7 +66,7 @@ function Library:Init(title)
     local sidebaranother = Instance.new("Frame")
     sidebaranother.Name = "Sidebaranother"
     sidebaranother.BackgroundTransparency = 1
-    sidebaranother.ClipsDescendants = false -- Allow LinerTab to move freely
+    sidebaranother.ClipsDescendants = false
     sidebaranother.Size = UDim2.fromOffset(100, 419)
     sidebaranother.Parent = sidebar
 
@@ -144,13 +144,13 @@ function Library:Init(title)
     libaryName.TextSize = 25
     libaryName.Parent = topbarorheaderig
 
-    -- Dragging Logic
     local RunService = game:GetService("RunService")
+    local UserInputService = game:GetService("UserInputService")
     local mouse = Players.LocalPlayer:GetMouse()
     local draggingWindow = false
     local dragStart
     local startPos
-    
+
     topbarorheaderig.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             draggingWindow = true
@@ -158,11 +158,13 @@ function Library:Init(title)
             startPos = mainuiframe.Position
         end
     end)
-    
-    mouse.Button1Up:Connect(function()
-        draggingWindow = false
+
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            draggingWindow = false
+        end
     end)
-    
+
     RunService.RenderStepped:Connect(function()
         if draggingWindow then
             local delta = Vector2.new(mouse.X, mouse.Y) - dragStart
@@ -181,7 +183,7 @@ function Library:Init(title)
         tab.Name = "Tab"
         tab.BackgroundColor3 = Color3.fromRGB(247, 247, 247)
         tab.BackgroundTransparency = 0.9
-        tab.ClipsDescendants = false -- FIX: Must be false so the indicator isn't cut off!
+        tab.ClipsDescendants = false
         tab.Size = UDim2.fromOffset(55, 60)
         tab.Text = ""
         tab.AutoButtonColor = false
@@ -253,12 +255,10 @@ function Library:Init(title)
         pagenScrolling.Name = "PagenScrolling"
         pagenScrolling.Active = true
         pagenScrolling.AnchorPoint = Vector2.new(0.5, 0.5)
-        pagenScrolling.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
-        pagenScrolling.BackgroundTransparency = 0
+        pagenScrolling.BackgroundTransparency = 1
         pagenScrolling.ClipsDescendants = true
         pagenScrolling.Position = UDim2.fromScale(0.496496, 0.498638)
-        pagenScrolling.ScrollBarImageColor3 = Color3.new()
-        pagenScrolling.ScrollBarThickness = 5
+        pagenScrolling.ScrollBarThickness = 0
         pagenScrolling.Size = UDim2.fromOffset(665, 458)
         pagenScrolling.Visible = false
         pagenScrolling.Parent = self.PageHolder
@@ -286,13 +286,12 @@ function Library:Init(title)
         if not self.FirstTab then
             self.FirstTab = tabData
             
-            -- Parent to SidebarAnother; ClipsDescendants disabled so LinerTab can move freely
             local lINERTAB1 = Instance.new("Frame")
             lINERTAB1.Name = "LINERTAB1"
             lINERTAB1.AnchorPoint = Vector2.new(1, 0.5)
             lINERTAB1.BackgroundColor3 = Color3.fromRGB(254, 254, 254)
-            lINERTAB1.Position = UDim2.new(1, -2, 0, 31.5) -- Hardcoded for first tab center
-            lINERTAB1.Size = UDim2.fromOffset(3, 35)
+            lINERTAB1.Position = UDim2.new(1, -2, 0, 31.5)
+            lINERTAB1.Size = UDim2.fromOffset(6, 25)
             lINERTAB1.ZIndex = 10
             lINERTAB1.Parent = self.SidebarAnother
 
@@ -324,7 +323,16 @@ function Library:Init(title)
         tab.MouseButton1Click:Connect(function()
             if self.CurrentTab == tabData then return end
             
+            local fadeTime = 0.2
+            
             for _, t in ipairs(self.Tabs) do
+                TweenService:Create(t.Page, TweenInfo.new(fadeTime), {BackgroundTransparency = 1}):Play()
+                for _, child in ipairs(t.Page:GetDescendants()) do
+                    if child:IsA("GuiObject") then
+                        TweenService:Create(child, TweenInfo.new(fadeTime), {BackgroundTransparency = 1, TextTransparency = 1, ImageTransparency = 1}):Play()
+                    end
+                end
+                task.wait(fadeTime)
                 t.Page.Visible = false
                 t.Button.BackgroundTransparency = 1
                 for _, child in ipairs(t.Icon:GetChildren()) do
@@ -334,6 +342,17 @@ function Library:Init(title)
             end
 
             tabData.Page.Visible = true
+            for _, child in ipairs(tabData.Page:GetDescendants()) do
+                if child:IsA("GuiObject") then
+                    local origBg = child.BackgroundTransparency
+                    local origTxt = child.TextTransparency or 1
+                    local origImg = child.ImageTransparency or 1
+                    child.BackgroundTransparency = 1
+                    child.TextTransparency = 1
+                    child.ImageTransparency = 1
+                    TweenService:Create(child, TweenInfo.new(fadeTime), {BackgroundTransparency = origBg, TextTransparency = origTxt, ImageTransparency = origImg}):Play()
+                end
+            end
             tabData.Button.BackgroundTransparency = 0.9
             tabData.Icon.ImageColor3 = Color3.fromRGB(255, 255, 255)
 
@@ -352,9 +371,8 @@ function Library:Init(title)
             self.CurrentTab = tabData
 
             if self.LinerTab then
-                -- Hardcoded math exactly calculating the offset for tab `i` based on UIListLayout constraints
                 local targetY = 31.5 + (tabIndex - 1) * 65
-                TweenService:Create(self.LinerTab, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+                TweenService:Create(self.LinerTab, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
                     Position = UDim2.new(1, -2, 0, targetY)
                 }):Play()
             end
@@ -587,7 +605,7 @@ function Library:Init(title)
                 sliderText.AutomaticSize = Enum.AutomaticSize.XY
                 sliderText.BackgroundTransparency = 1
                 sliderText.FontFace = Font.new("rbxassetid://12187365364", Enum.FontWeight.SemiBold)
-                sliderText.Position = UDim2.new(0, 19, 0.5, -8)
+                sliderText.Position = UDim2.new(0, 19, 0.5, -6)
                 sliderText.Size = UDim2.fromOffset(1, 1)
                 sliderText.Text = sliderNameTxt
                 sliderText.TextColor3 = Color3.new(1, 1, 1)
@@ -715,7 +733,7 @@ function Library:Init(title)
                 options.AutomaticSize = Enum.AutomaticSize.XY
                 options.BackgroundTransparency = 1
                 options.FontFace = Font.new("rbxassetid://12187365364", Enum.FontWeight.SemiBold)
-                options.Position = UDim2.new(0, 8, 0.5, -1)
+                options.Position = UDim2.new(0, 19, 0.5, -1)
                 options.Size = UDim2.fromOffset(1, 1)
                 options.Text = optionsList[1] or "Option 1, Option 2 , Option 3"
                 options.TextColor3 = Color3.new(1, 1, 1)
@@ -918,7 +936,7 @@ function Library:Init(title)
                 toggleName5.AutomaticSize = Enum.AutomaticSize.XY
                 toggleName5.BackgroundTransparency = 1
                 toggleName5.FontFace = Font.new("rbxassetid://12187365364")
-                toggleName5.Position = UDim2.new(0, 19, 0.18, 0)
+                toggleName5.Position = UDim2.new(0, 19, 0.12, 0)
                 toggleName5.Size = UDim2.fromOffset(1, 1)
                 toggleName5.Text = boxName
                 toggleName5.TextColor3 = Color3.new(1, 1, 1)
