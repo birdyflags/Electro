@@ -253,7 +253,9 @@ function Library:Init(title)
         pagenScrolling.Name = "PagenScrolling"
         pagenScrolling.Active = true
         pagenScrolling.AnchorPoint = Vector2.new(0.5, 0.5)
-        pagenScrolling.BackgroundTransparency = 1
+        pagenScrolling.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+        pagenScrolling.BackgroundTransparency = 0
+        pagenScrolling.ClipsDescendants = true
         pagenScrolling.Position = UDim2.fromScale(0.496496, 0.498638)
         pagenScrolling.ScrollBarImageColor3 = Color3.new()
         pagenScrolling.ScrollBarThickness = 5
@@ -290,7 +292,7 @@ function Library:Init(title)
             lINERTAB1.AnchorPoint = Vector2.new(1, 0.5)
             lINERTAB1.BackgroundColor3 = Color3.fromRGB(254, 254, 254)
             lINERTAB1.Position = UDim2.new(1, -2, 0, 31.5) -- Hardcoded for first tab center
-            lINERTAB1.Size = UDim2.fromOffset(4, 40)
+            lINERTAB1.Size = UDim2.fromOffset(3, 35)
             lINERTAB1.ZIndex = 10
             lINERTAB1.Parent = self.SidebarAnother
 
