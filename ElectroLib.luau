@@ -348,10 +348,13 @@ function Library:Init(title)
             self.CurrentTab = tabData
 
             if self.LinerTab then
-                -- Hardcoded math exactly calculating the offset for tab `i` based on UIListLayout constraints
-                local targetY = 31.5 + (tabIndex - 1) * 65
+                -- Use AbsolutePosition so the Y is always correct no matter
+                -- how many tabs exist or what the padding/gap values are.
+                local sidebarAnotherAbsY = self.SidebarAnother.AbsolutePosition.Y
+                local tabAbsCenterY = tab.AbsolutePosition.Y + tab.AbsoluteSize.Y / 2
+                local localY = tabAbsCenterY - sidebarAnotherAbsY
                 TweenService:Create(self.LinerTab, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                    Position = UDim2.new(1, -2, 0, targetY)
+                    Position = UDim2.new(1, -2, 0, localY)
                 }):Play()
             end
         end)
@@ -1001,10 +1004,7 @@ function Library:Init(title)
 
     function Window:SelectFirst()
         if self.FirstTab then
-            self.Holder.UIListLayout:ApplyLayout()
-            
             local tabData = self.FirstTab
-            local tab = tabData.Button
             
             tabData.Page.Visible = true
             tabData.Button.BackgroundTransparency = 0.9
@@ -1024,9 +1024,15 @@ function Library:Init(title)
 
             self.CurrentTab = tabData
 
-            if self.LinerTab then
-                self.LinerTab.Position = UDim2.new(1, -2, 0, 31.5)
-            end
+            -- Defer so UIListLayout has finished laying out before we read AbsolutePosition
+            task.defer(function()
+                if self.LinerTab and tabData.Button then
+                    local sidebarAnotherAbsY = self.SidebarAnother.AbsolutePosition.Y
+                    local tabAbsCenterY = tabData.Button.AbsolutePosition.Y + tabData.Button.AbsoluteSize.Y / 2
+                    local localY = tabAbsCenterY - sidebarAnotherAbsY
+                    self.LinerTab.Position = UDim2.new(1, -2, 0, localY)
+                end
+            end)
         end
     end
 
