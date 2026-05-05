@@ -290,7 +290,7 @@ function Library:Init(title)
             lINERTAB1.AnchorPoint = Vector2.new(1, 0.5)
             lINERTAB1.BackgroundColor3 = Color3.fromRGB(254, 254, 254)
             lINERTAB1.Position = UDim2.new(1, -2, 0, 31.5) -- Hardcoded for first tab center
-            lINERTAB1.Size = UDim2.fromOffset(27, 33)
+            lINERTAB1.Size = UDim2.fromOffset(4, 40)
             lINERTAB1.ZIndex = 10
             lINERTAB1.Parent = self.SidebarAnother
 
