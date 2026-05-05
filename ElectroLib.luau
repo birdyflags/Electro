@@ -143,31 +143,27 @@ function Library:Init(title)
     libaryName.TextSize = 25
     libaryName.Parent = topbarorheaderig
 
-    -- Dragging Logic (No UserInputService)
-    local dragging = false
+    -- Dragging Logic
+    local RunService = game:GetService("RunService")
+    local mouse = Players.LocalPlayer:GetMouse()
+    local draggingWindow = false
     local dragStart
     local startPos
     
-    topbarorheaderig.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            dragStart = input.Position
-            startPos = mainuiframe.Position
-            
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
-        end
+    topbarorheaderig.MouseButton1Down:Connect(function()
+        draggingWindow = true
+        dragStart = Vector2.new(mouse.X, mouse.Y)
+        startPos = mainuiframe.Position
     end)
     
-    topbarorheaderig.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            if dragging then
-                local delta = input.Position - dragStart
-                mainuiframe.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-            end
+    mouse.Button1Up:Connect(function()
+        draggingWindow = false
+    end)
+    
+    RunService.RenderStepped:Connect(function()
+        if draggingWindow then
+            local delta = Vector2.new(mouse.X, mouse.Y) - dragStart
+            mainuiframe.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
         end
     end)
 
@@ -624,7 +620,8 @@ function Library:Init(title)
                 progress.Parent = progressBG
                 
                 local mouse = Players.LocalPlayer:GetMouse()
-                local dragging = false
+                local draggingSlider = false
+                local RunService = game:GetService("RunService")
                 
                 progressBG.MouseEnter:Connect(function()
                     TweenService:Create(progressBG, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(40, 40, 48)}):Play()
@@ -634,7 +631,7 @@ function Library:Init(title)
                 end)
                 
                 progressBG.MouseButton1Down:Connect(function()
-                    dragging = true
+                    draggingSlider = true
                     local sizeX = math.clamp((mouse.X - progressBG.AbsolutePosition.X) / progressBG.AbsoluteSize.X, 0, 1)
                     progress.Size = UDim2.fromScale(sizeX, 1)
                     local val = math.floor((sizeX * (max - min)) + min)
@@ -642,18 +639,18 @@ function Library:Init(title)
                     if callback then callback(val) end
                 end)
                 
-                mouse.Move:Connect(function()
-                    if dragging then
+                mouse.Button1Up:Connect(function()
+                    draggingSlider = false
+                end)
+
+                RunService.RenderStepped:Connect(function()
+                    if draggingSlider then
                         local sizeX = math.clamp((mouse.X - progressBG.AbsolutePosition.X) / progressBG.AbsoluteSize.X, 0, 1)
                         progress.Size = UDim2.fromScale(sizeX, 1)
                         local val = math.floor((sizeX * (max - min)) + min)
                         value.Text = tostring(val)
                         if callback then callback(val) end
                     end
-                end)
-                
-                mouse.Button1Up:Connect(function()
-                    dragging = false
                 end)
             end
 
@@ -995,7 +992,9 @@ function Library:Init(title)
 
             if self.LinerTab then
                 task.spawn(function()
-                    task.wait(0.05) -- Wait for layout to apply
+                    local RunService = game:GetService("RunService")
+                    RunService.RenderStepped:Wait()
+                    RunService.RenderStepped:Wait()
                     local relativeY = tab.AbsolutePosition.Y - self.SidebarAnother.AbsolutePosition.Y
                     self.LinerTab.Position = UDim2.new(1, 0, 0, relativeY + (tab.AbsoluteSize.Y / 2) - (self.LinerTab.AbsoluteSize.Y / 2))
                 end)
