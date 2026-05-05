@@ -1,4 +1,3 @@
-
 local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
@@ -369,7 +368,7 @@ function Library:Init(title)
             sectionLeft.BackgroundColor3 = Color3.fromRGB(19, 19, 23)
             sectionLeft.BackgroundTransparency = 0.45
             sectionLeft.ClipsDescendants = true
-            sectionLeft.Position = UDim2.fromScale(0.231839, -0.119821)
+            sectionLeft.Position = UDim2.fromScale(0.231839, 0.05)
             sectionLeft.Size = UDim2.fromOffset(312, 70)
             sectionLeft.Parent = pagenScrolling
 
@@ -543,7 +542,7 @@ function Library:Init(title)
                 toggleName.AutomaticSize = Enum.AutomaticSize.XY
                 toggleName.BackgroundTransparency = 1
                 toggleName.FontFace = Font.new("rbxassetid://12187365364")
-                toggleName.Position = UDim2.new(0, 19, 0.5, 0)
+                toggleName.Position = UDim2.new(0, 50, 0.5, 0)
                 toggleName.Size = UDim2.fromOffset(1, 1)
                 toggleName.Text = toggleNameTxt
                 toggleName.TextColor3 = state and Color3.new(1, 1, 1) or Color3.fromRGB(83, 83, 89)
