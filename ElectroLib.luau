@@ -278,6 +278,8 @@ function Library:Init(title)
         uIPadding1.PaddingTop = UDim.new(0, 25)
         uIPadding1.Parent = pagenScrolling
 
+        local tabIndex = #self.Tabs + 1
+        
         if not self.FirstTab then
             self.FirstTab = tabData
             
@@ -286,6 +288,7 @@ function Library:Init(title)
             lINERTAB1.Name = "LINERTAB1"
             lINERTAB1.AnchorPoint = Vector2.new(1, 0.5)
             lINERTAB1.BackgroundColor3 = Color3.fromRGB(254, 254, 254)
+            lINERTAB1.Position = UDim2.new(1, -2, 0, 31.5) -- Hardcoded perfectly for the first tab
             lINERTAB1.Size = UDim2.fromOffset(27, 33)
             lINERTAB1.Parent = self.SidebarAnother
 
@@ -345,7 +348,8 @@ function Library:Init(title)
             self.CurrentTab = tabData
 
             if self.LinerTab then
-                local targetY = (tab.AbsolutePosition.Y - self.SidebarAnother.AbsolutePosition.Y) + (tab.AbsoluteSize.Y / 2)
+                -- Hardcoded math exactly calculating the offset for tab `i` based on UIListLayout constraints
+                local targetY = 31.5 + (tabIndex - 1) * 65
                 TweenService:Create(self.LinerTab, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
                     Position = UDim2.new(1, -2, 0, targetY)
                 }):Play()
@@ -1021,13 +1025,7 @@ function Library:Init(title)
             self.CurrentTab = tabData
 
             if self.LinerTab then
-                task.spawn(function()
-                    local RunService = game:GetService("RunService")
-                    RunService.RenderStepped:Wait()
-                    RunService.RenderStepped:Wait()
-                    local targetY = (tab.AbsolutePosition.Y - self.SidebarAnother.AbsolutePosition.Y) + (tab.AbsoluteSize.Y / 2)
-                    self.LinerTab.Position = UDim2.new(1, -2, 0, targetY)
-                end)
+                self.LinerTab.Position = UDim2.new(1, -2, 0, 31.5)
             end
         end
     end
