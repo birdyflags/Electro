@@ -171,6 +171,7 @@ function Library:Init(title)
 
     Window.Holder = holder
     Window.PageHolder = pageholder
+    Window.SidebarAnother = sidebaranother
 
     function Window:CreateTab(iconId)
         local tabData = {}
@@ -641,8 +642,11 @@ function Library:Init(title)
                     if callback then callback(val) end
                 end)
                 
-                mouse.Button1Up:Connect(function()
-                    draggingSlider = false
+                local UserInputService = game:GetService("UserInputService")
+                UserInputService.InputEnded:Connect(function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        draggingSlider = false
+                    end
                 end)
 
                 RunService.RenderStepped:Connect(function()
