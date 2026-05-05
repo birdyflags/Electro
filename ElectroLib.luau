@@ -66,7 +66,7 @@ function Library:Init(title)
     local sidebaranother = Instance.new("Frame")
     sidebaranother.Name = "Sidebaranother"
     sidebaranother.BackgroundTransparency = 1
-    sidebaranother.Size = UDim2.fromOffset(100, 419)
+    sidebaranother.Size = UDim2.fromOffset(100, 600)
     sidebaranother.Parent = sidebar
 
     local holder = Instance.new("Frame")
@@ -288,10 +288,10 @@ function Library:Init(title)
             lINERTAB1.Name = "LINERTAB1"
             lINERTAB1.AnchorPoint = Vector2.new(1, 0.5)
             lINERTAB1.BackgroundColor3 = Color3.fromRGB(254, 254, 254)
-            lINERTAB1.Position = UDim2.new(1, -2, 0, 48.5) -- Aligned to first tab center (10px top pad + 30px half height + centering offset)
+            lINERTAB1.Position = UDim2.new(1, -2, 0, 31.5) -- Hardcoded for first tab center
             lINERTAB1.Size = UDim2.fromOffset(27, 33)
             lINERTAB1.ZIndex = 10
-            lINERTAB1.Parent = self.Sidebar
+            lINERTAB1.Parent = self.SidebarAnother
 
             local uICorner3 = Instance.new("UICorner")
             uICorner3.Name = "UICorner"
@@ -349,8 +349,8 @@ function Library:Init(title)
             self.CurrentTab = tabData
 
             if self.LinerTab then
-                -- Calculate target Y based on tab index: starts at 48.5 (first tab center), 65px spacing
-                local targetY = 48.5 + (tabIndex - 1) * 65
+                -- Hardcoded math exactly calculating the offset for tab `i` based on UIListLayout constraints
+                local targetY = 31.5 + (tabIndex - 1) * 65
                 TweenService:Create(self.LinerTab, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
                     Position = UDim2.new(1, -2, 0, targetY)
                 }):Play()
