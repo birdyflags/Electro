@@ -281,14 +281,13 @@ function Library:Init(title)
         if not self.FirstTab then
             self.FirstTab = tabData
             
-            -- Parent to the first Tab just like the UI.lua raw dump.
+            -- Parent strictly to SidebarAnother right edge to align with the Liner separator
             local lINERTAB1 = Instance.new("Frame")
             lINERTAB1.Name = "LINERTAB1"
             lINERTAB1.AnchorPoint = Vector2.new(1, 0.5)
             lINERTAB1.BackgroundColor3 = Color3.fromRGB(254, 254, 254)
-            lINERTAB1.Position = UDim2.fromScale(1.41818, 0.5)
             lINERTAB1.Size = UDim2.fromOffset(27, 33)
-            lINERTAB1.Parent = tab
+            lINERTAB1.Parent = self.SidebarAnother
 
             local uICorner3 = Instance.new("UICorner")
             uICorner3.Name = "UICorner"
@@ -346,8 +345,9 @@ function Library:Init(title)
             self.CurrentTab = tabData
 
             if self.LinerTab then
-                TweenService:Create(self.LinerTab, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                    Position = UDim2.new(1.41818, 0, 0.5, tab.AbsolutePosition.Y - self.LinerTab.Parent.AbsolutePosition.Y)
+                local targetY = (tab.AbsolutePosition.Y - self.SidebarAnother.AbsolutePosition.Y) + (tab.AbsoluteSize.Y / 2)
+                TweenService:Create(self.LinerTab, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+                    Position = UDim2.new(1, -2, 0, targetY)
                 }):Play()
             end
         end)
@@ -837,6 +837,17 @@ function Library:Init(title)
                 imageLabel1.Size = UDim2.fromOffset(20, 20)
                 imageLabel1.Parent = iconHolder1
                 
+                local gradientIconLayer = Instance.new("ImageLabel")
+                gradientIconLayer.Name = "GradientIcon"
+                gradientIconLayer.AnchorPoint = Vector2.new(0.5, 0.5)
+                gradientIconLayer.BackgroundTransparency = 1
+                gradientIconLayer.Image = "rbxassetid://112243474448065"
+                gradientIconLayer.Position = UDim2.fromScale(0.5, 0.5)
+                gradientIconLayer.ScaleType = Enum.ScaleType.Fit
+                gradientIconLayer.Size = UDim2.fromScale(1, 1)
+                gradientIconLayer.ImageTransparency = 1
+                gradientIconLayer.Parent = imageLabel1
+                
                 local iconGradient = Instance.new("UIGradient")
                 iconGradient.Color = ColorSequence.new({
                     ColorSequenceKeypoint.new(0, Color3.fromRGB(235, 100, 52)),
@@ -846,8 +857,7 @@ function Library:Init(title)
                     ColorSequenceKeypoint.new(1, Color3.fromRGB(235, 100, 52)),
                 })
                 iconGradient.Rotation = 70
-                iconGradient.Enabled = false
-                iconGradient.Parent = imageLabel1
+                iconGradient.Parent = gradientIconLayer
 
                 local inline = Instance.new("Frame")
                 inline.Name = "Inline"
@@ -871,8 +881,7 @@ function Library:Init(title)
                 holder3.MouseButton1Click:Connect(function()
                     binding = true
                     value1.Text = "..."
-                    iconGradient.Enabled = true
-                    imageLabel1.ImageColor3 = Color3.fromRGB(255, 255, 255)
+                    TweenService:Create(gradientIconLayer, TweenInfo.new(0.25), {ImageTransparency = 0}):Play()
                 end)
                 
                 mouse = Players.LocalPlayer:GetMouse()
@@ -880,7 +889,7 @@ function Library:Init(title)
                     if binding then
                         binding = false
                         value1.Text = string.upper(key)
-                        iconGradient.Enabled = false
+                        TweenService:Create(gradientIconLayer, TweenInfo.new(0.25), {ImageTransparency = 1}):Play()
                         if callback then callback(string.upper(key)) end
                     end
                 end)
@@ -1012,7 +1021,13 @@ function Library:Init(title)
             self.CurrentTab = tabData
 
             if self.LinerTab then
-                self.LinerTab.Position = UDim2.fromScale(1.41818, 0.5)
+                task.spawn(function()
+                    local RunService = game:GetService("RunService")
+                    RunService.RenderStepped:Wait()
+                    RunService.RenderStepped:Wait()
+                    local targetY = (tab.AbsolutePosition.Y - self.SidebarAnother.AbsolutePosition.Y) + (tab.AbsoluteSize.Y / 2)
+                    self.LinerTab.Position = UDim2.new(1, -2, 0, targetY)
+                end)
             end
         end
     end
