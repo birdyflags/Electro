@@ -1,3 +1,4 @@
+
 local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
@@ -322,17 +323,8 @@ function Library:Init(title)
 
         tab.MouseButton1Click:Connect(function()
             if self.CurrentTab == tabData then return end
-            
-            local fadeTime = 0.2
-            
+
             for _, t in ipairs(self.Tabs) do
-                TweenService:Create(t.Page, TweenInfo.new(fadeTime), {BackgroundTransparency = 1}):Play()
-                for _, child in ipairs(t.Page:GetDescendants()) do
-                    if child:IsA("GuiObject") then
-                        TweenService:Create(child, TweenInfo.new(fadeTime), {BackgroundTransparency = 1, TextTransparency = 1, ImageTransparency = 1}):Play()
-                    end
-                end
-                task.wait(fadeTime)
                 t.Page.Visible = false
                 t.Button.BackgroundTransparency = 1
                 for _, child in ipairs(t.Icon:GetChildren()) do
@@ -342,17 +334,6 @@ function Library:Init(title)
             end
 
             tabData.Page.Visible = true
-            for _, child in ipairs(tabData.Page:GetDescendants()) do
-                if child:IsA("GuiObject") then
-                    local origBg = child.BackgroundTransparency
-                    local origTxt = child.TextTransparency or 1
-                    local origImg = child.ImageTransparency or 1
-                    child.BackgroundTransparency = 1
-                    child.TextTransparency = 1
-                    child.ImageTransparency = 1
-                    TweenService:Create(child, TweenInfo.new(fadeTime), {BackgroundTransparency = origBg, TextTransparency = origTxt, ImageTransparency = origImg}):Play()
-                end
-            end
             tabData.Button.BackgroundTransparency = 0.9
             tabData.Icon.ImageColor3 = Color3.fromRGB(255, 255, 255)
 
@@ -562,7 +543,7 @@ function Library:Init(title)
                 toggleName.AutomaticSize = Enum.AutomaticSize.XY
                 toggleName.BackgroundTransparency = 1
                 toggleName.FontFace = Font.new("rbxassetid://12187365364")
-                toggleName.Position = UDim2.new(0.0192308, 43, 0.5, 0)
+                toggleName.Position = UDim2.new(0, 19, 0.5, 0)
                 toggleName.Size = UDim2.fromOffset(1, 1)
                 toggleName.Text = toggleNameTxt
                 toggleName.TextColor3 = state and Color3.new(1, 1, 1) or Color3.fromRGB(83, 83, 89)
@@ -733,7 +714,7 @@ function Library:Init(title)
                 options.AutomaticSize = Enum.AutomaticSize.XY
                 options.BackgroundTransparency = 1
                 options.FontFace = Font.new("rbxassetid://12187365364", Enum.FontWeight.SemiBold)
-                options.Position = UDim2.new(0, 19, 0.5, -1)
+                options.Position = UDim2.new(0, 19, 0.5, 0)
                 options.Size = UDim2.fromOffset(1, 1)
                 options.Text = optionsList[1] or "Option 1, Option 2 , Option 3"
                 options.TextColor3 = Color3.new(1, 1, 1)
@@ -936,7 +917,7 @@ function Library:Init(title)
                 toggleName5.AutomaticSize = Enum.AutomaticSize.XY
                 toggleName5.BackgroundTransparency = 1
                 toggleName5.FontFace = Font.new("rbxassetid://12187365364")
-                toggleName5.Position = UDim2.new(0, 19, 0.12, 0)
+                toggleName5.Position = UDim2.new(0, 19, 0.5, 0)
                 toggleName5.Size = UDim2.fromOffset(1, 1)
                 toggleName5.Text = boxName
                 toggleName5.TextColor3 = Color3.new(1, 1, 1)
