@@ -150,10 +150,12 @@ function Library:Init(title)
     local dragStart
     local startPos
     
-    topbarorheaderig.MouseButton1Down:Connect(function()
-        draggingWindow = true
-        dragStart = Vector2.new(mouse.X, mouse.Y)
-        startPos = mainuiframe.Position
+    topbarorheaderig.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            draggingWindow = true
+            dragStart = Vector2.new(mouse.X, mouse.Y)
+            startPos = mainuiframe.Position
+        end
     end)
     
     mouse.Button1Up:Connect(function()
