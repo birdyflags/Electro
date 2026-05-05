@@ -1032,4 +1032,4 @@ function Library:Init(title)
     return Window
 end
 
-return 
+return Library
