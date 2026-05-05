@@ -677,10 +677,11 @@ function Library:Init(title)
 
                 local dropdownName = Instance.new("TextLabel")
                 dropdownName.Name = "Dropdown_Name"
+                dropdownName.AnchorPoint = Vector2.new(0, 0.5)
                 dropdownName.AutomaticSize = Enum.AutomaticSize.XY
                 dropdownName.BackgroundTransparency = 1
                 dropdownName.FontFace = Font.new("rbxassetid://12187365364")
-                dropdownName.Position = UDim2.fromOffset(20, 12)
+                dropdownName.Position = UDim2.new(0, 19, 0, 12)
                 dropdownName.Size = UDim2.fromOffset(1, 1)
                 dropdownName.Text = dropName
                 dropdownName.TextColor3 = Color3.fromRGB(204, 204, 209)
@@ -689,9 +690,9 @@ function Library:Init(title)
 
                 local holder2 = Instance.new("TextButton")
                 holder2.Name = "Holder"
-                holder2.AnchorPoint = Vector2.new(0.5, 1)
+                holder2.AnchorPoint = Vector2.new(0, 1)
                 holder2.BackgroundColor3 = Color3.fromRGB(26, 26, 33)
-                holder2.Position = UDim2.fromScale(0.5, 1)
+                holder2.Position = UDim2.new(0, 19, 1, -4)
                 holder2.Size = UDim2.fromOffset(272, 22)
                 holder2.Text = ""
                 holder2.AutoButtonColor = false
@@ -713,7 +714,7 @@ function Library:Init(title)
                 options.AutomaticSize = Enum.AutomaticSize.XY
                 options.BackgroundTransparency = 1
                 options.FontFace = Font.new("rbxassetid://12187365364", Enum.FontWeight.SemiBold)
-                options.Position = UDim2.new(0, 19, 0.5, 0)
+                options.Position = UDim2.new(0, 8, 0.5, 0)
                 options.Size = UDim2.fromOffset(1, 1)
                 options.Text = optionsList[1] or "Option 1, Option 2 , Option 3"
                 options.TextColor3 = Color3.new(1, 1, 1)
@@ -925,10 +926,10 @@ function Library:Init(title)
 
                 local holder5 = Instance.new("Frame")
                 holder5.Name = "Holder"
-                holder5.AnchorPoint = Vector2.new(0.5, 1)
+                holder5.AnchorPoint = Vector2.new(0, 1)
                 holder5.AutomaticSize = Enum.AutomaticSize.XY
                 holder5.BackgroundColor3 = Color3.fromRGB(26, 26, 33)
-                holder5.Position = UDim2.fromScale(0.5, 1.1)
+                holder5.Position = UDim2.new(0, 19, 1, -2)
                 holder5.Size = UDim2.fromOffset(272, 16)
                 holder5.Parent = keybindComponent2
 
@@ -947,26 +948,22 @@ function Library:Init(title)
                 uIListLayout5.FillDirection = Enum.FillDirection.Horizontal
                 uIListLayout5.Parent = holder5
 
+                local uIPaddingHolder = Instance.new("UIPadding")
+                uIPaddingHolder.Name = "UIPadding"
+                uIPaddingHolder.PaddingLeft = UDim.new(0, 8)
+                uIPaddingHolder.Parent = holder5
+
                 local value3 = Instance.new("TextBox")
                 value3.Name = "Value"
-                value3.AnchorPoint = Vector2.new(0, 0.5)
                 value3.AutomaticSize = Enum.AutomaticSize.XY
                 value3.BackgroundTransparency = 1
                 value3.FontFace = Font.new("rbxassetid://12187365364", Enum.FontWeight.Medium)
-                value3.Position = UDim2.fromScale(0.102941, 0.5)
                 value3.Size = UDim2.fromOffset(113, 32)
                 value3.Text = default
                 value3.TextColor3 = Color3.new(1, 1, 1)
                 value3.TextSize = 14
                 value3.ClearTextOnFocus = false
                 value3.Parent = holder5
-
-                local uIPadding5 = Instance.new("UIPadding")
-                uIPadding5.Name = "UIPadding"
-                uIPadding5.PaddingBottom = UDim.new(0, 4)
-                uIPadding5.PaddingRight = UDim.new(0, 3)
-                uIPadding5.PaddingTop = UDim.new(0, 4)
-                uIPadding5.Parent = value3
 
                 local iconHolder3 = Instance.new("Frame")
                 iconHolder3.Name = "Icon_Holder"
@@ -1035,4 +1032,4 @@ function Library:Init(title)
     return Window
 end
 
-return Library
+return 
