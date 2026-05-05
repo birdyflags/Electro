@@ -282,14 +282,13 @@ function Library:Init(title)
         if not self.FirstTab then
             self.FirstTab = tabData
             
-            -- Exactly replicating the lINERTAB1 indicator on the first tab
+            -- Parent to SidebarAnother to prevent ClipsDescendants from hiding it when sliding
             local lINERTAB1 = Instance.new("Frame")
             lINERTAB1.Name = "LINERTAB1"
             lINERTAB1.AnchorPoint = Vector2.new(1, 0.5)
             lINERTAB1.BackgroundColor3 = Color3.fromRGB(254, 254, 254)
-            lINERTAB1.Position = UDim2.fromScale(1.41818, 0.5)
             lINERTAB1.Size = UDim2.fromOffset(27, 33)
-            lINERTAB1.Parent = tab
+            lINERTAB1.Parent = self.SidebarAnother
 
             local uICorner3 = Instance.new("UICorner")
             uICorner3.Name = "UICorner"
@@ -347,8 +346,9 @@ function Library:Init(title)
             self.CurrentTab = tabData
 
             if self.LinerTab then
+                local relativeY = tab.AbsolutePosition.Y - self.SidebarAnother.AbsolutePosition.Y
                 TweenService:Create(self.LinerTab, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                    Position = UDim2.new(1.41818, 0, 0.5, tab.AbsolutePosition.Y - self.LinerTab.Parent.AbsolutePosition.Y)
+                    Position = UDim2.new(1, 0, 0, relativeY + (tab.AbsoluteSize.Y / 2) - (self.LinerTab.AbsoluteSize.Y / 2))
                 }):Play()
             end
         end)
@@ -803,7 +803,7 @@ function Library:Init(title)
                 value1.FontFace = Font.new("rbxassetid://12187365364")
                 value1.Position = UDim2.new(0, 19, 0.5, 0)
                 value1.Size = UDim2.fromOffset(1, 1)
-                value1.Text = default
+                value1.Text = typeof(default) == "EnumItem" and default.Name or tostring(default)
                 value1.TextColor3 = Color3.new(1, 1, 1)
                 value1.TextSize = 14
                 value1.Parent = holder3
@@ -992,6 +992,14 @@ function Library:Init(title)
             gradient.Parent = tabData.Icon
 
             self.CurrentTab = tabData
+
+            if self.LinerTab then
+                task.spawn(function()
+                    task.wait(0.05) -- Wait for layout to apply
+                    local relativeY = tab.AbsolutePosition.Y - self.SidebarAnother.AbsolutePosition.Y
+                    self.LinerTab.Position = UDim2.new(1, 0, 0, relativeY + (tab.AbsoluteSize.Y / 2) - (self.LinerTab.AbsoluteSize.Y / 2))
+                end)
+            end
         end
     end
 
