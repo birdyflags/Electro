@@ -1,756 +1,270 @@
---!nocheck
--- ElectroLib - themed UI for ELECTRO.FUN scripts.
-
 local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
 
-local FONT_ID = "rbxassetid://12187365364"
-local FONT = Font.new(FONT_ID)
-local FONT_BOLD = Font.new(FONT_ID, Enum.FontWeight.Bold)
+local Library = {}
 
-local palette = {
-	accent      = Color3.fromRGB(235, 100, 52),
-	accentDim   = Color3.fromRGB(175, 70, 35),
-	window      = Color3.fromRGB(22, 21, 27),
-	header      = Color3.fromRGB(33, 31, 40),
-	section     = Color3.fromRGB(19, 19, 23),
-	secHeader   = Color3.fromRGB(23, 24, 30),
-	secStroke   = Color3.fromRGB(32, 34, 45),
-	liner       = Color3.fromRGB(21, 21, 25),
-	control     = Color3.fromRGB(26, 26, 33),
-	ctrlStroke  = Color3.fromRGB(34, 34, 41),
-	ctrlHover   = Color3.fromRGB(55, 55, 65),
-	barBg       = Color3.fromRGB(32, 32, 39),
-	barStroke   = Color3.fromRGB(40, 40, 46),
-	muted       = Color3.fromRGB(83, 83, 89),
-	text        = Color3.new(1, 1, 1),
-	idle        = Color3.fromRGB(120, 120, 128),
-	hover       = Color3.fromRGB(180, 180, 190),
-	brand       = Color3.fromRGB(161, 152, 159),
-}
+function Library:Init()
+    local Window = {
+        Tabs = {},
+        FirstTab = nil,
+        CurrentTab = nil
+    }
 
-local FAST = TweenInfo.new(0.15, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-local MED  = TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "ScreenGui"
+    screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    screenGui.Parent = CoreGui
 
-local TAB_W, TAB_H = 58, 54
-local TAB_GAP, TABS_LPAD = 3, 15
+    local mainuiframe = Instance.new("Frame")
+    mainuiframe.Name = "Mainuiframe"
+    mainuiframe.AnchorPoint = Vector2.new(0.5, 0.5)
+    mainuiframe.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+    mainuiframe.ClipsDescendants = true
+    mainuiframe.Position = UDim2.fromScale(0.49746, 0.5)
+    mainuiframe.Size = UDim2.fromOffset(754, 524)
+    mainuiframe.Parent = screenGui
 
-local function make(class, props)
-	local inst = Instance.new(class)
-	if props then
-		for k, v in pairs(props) do
-			inst[k] = v
-		end
-	end
-	return inst
+    local hEader = Instance.new("Frame")
+    hEader.Name = "HEader"
+    hEader.AnchorPoint = Vector2.new(0.5, 0)
+    hEader.BackgroundTransparency = 1
+    hEader.Position = UDim2.fromScale(0.5, 0)
+    hEader.Size = UDim2.fromOffset(767, 64)
+    hEader.Parent = mainuiframe
+
+    local uICorner = Instance.new("UICorner")
+    uICorner.CornerRadius = UDim.new(0, 14)
+    uICorner.Parent = hEader
+
+    local linerthingyorseparatoridontremmember = Instance.new("Frame")
+    linerthingyorseparatoridontremmember.Name = "Linerthingyorseparatoridontremmember"
+    linerthingyorseparatoridontremmember.AnchorPoint = Vector2.new(0.5, 1)
+    linerthingyorseparatoridontremmember.BackgroundColor3 = Color3.fromRGB(31, 31, 45)
+    linerthingyorseparatoridontremmember.BorderSizePixel = 0
+    linerthingyorseparatoridontremmember.Position = UDim2.fromScale(0.499511, 1.01562)
+    linerthingyorseparatoridontremmember.Size = UDim2.fromOffset(760, 2)
+    linerthingyorseparatoridontremmember.Parent = hEader
+
+    local uICorner1 = Instance.new("UICorner")
+    uICorner1.CornerRadius = UDim.new(0, 14)
+    uICorner1.Parent = mainuiframe
+
+    local sidebar = Instance.new("Frame")
+    sidebar.Name = "Sidebar"
+    sidebar.BackgroundTransparency = 1
+    sidebar.Position = UDim2.fromScale(0, 0.136082)
+    sidebar.Size = UDim2.fromOffset(100, 436)
+    sidebar.Parent = mainuiframe
+
+    local sidebaranother = Instance.new("Frame")
+    sidebaranother.Name = "Sidebaranother"
+    sidebaranother.BackgroundTransparency = 1
+    sidebaranother.Size = UDim2.fromOffset(100, 419)
+    sidebaranother.Parent = sidebar
+
+    local holder = Instance.new("Frame")
+    holder.Name = "Holder"
+    holder.AnchorPoint = Vector2.new(0.5, 0.5)
+    holder.BackgroundTransparency = 1
+    holder.Position = UDim2.fromScale(0.5, 0.5)
+    holder.Size = UDim2.fromOffset(75, 436)
+    holder.Parent = sidebaranother
+
+    local uIListLayout = Instance.new("UIListLayout")
+    uIListLayout.Padding = UDim.new(0, 5)
+    uIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    uIListLayout.Parent = holder
+
+    local uIPadding = Instance.new("UIPadding")
+    uIPadding.PaddingLeft = UDim.new(0, 9)
+    uIPadding.PaddingTop = UDim.new(0, 10)
+    uIPadding.Parent = holder
+
+    local liner = Instance.new("Frame")
+    liner.Name = "Liner"
+    liner.AnchorPoint = Vector2.new(1, 0.5)
+    liner.BackgroundColor3 = Color3.fromRGB(31, 31, 45)
+    liner.BorderSizePixel = 0
+    liner.Position = UDim2.fromScale(1, 0.530293)
+    liner.Size = UDim2.new(0, 2, 0, 60)
+    liner.Parent = sidebaranother
+
+    local pageholder = Instance.new("Frame")
+    pageholder.Name = "Pageholder"
+    pageholder.AnchorPoint = Vector2.new(0.5, 0.5)
+    pageholder.BackgroundTransparency = 1
+    pageholder.ClipsDescendants = true
+    pageholder.Position = UDim2.fromScale(0.565867, 0.562023)
+    pageholder.Size = UDim2.fromOffset(660, 459)
+    pageholder.Parent = mainuiframe
+
+    Window.SidebarAnother = sidebaranother
+    Window.Holder = holder
+    Window.Liner = liner
+    Window.PageHolder = pageholder
+
+    function Window:CreateTab(iconId)
+        local tabData = {}
+
+        local tab = Instance.new("TextButton")
+        tab.Name = "Tab"
+        tab.BackgroundColor3 = Color3.fromRGB(247, 247, 247)
+        tab.BackgroundTransparency = 1
+        tab.ClipsDescendants = true
+        tab.Size = UDim2.fromOffset(55, 60)
+        tab.Text = ""
+        tab.Parent = self.Holder
+
+        local uICorner2 = Instance.new("UICorner")
+        uICorner2.CornerRadius = UDim.new(0, 5)
+        uICorner2.Parent = tab
+
+        local icon = Instance.new("ImageLabel")
+        icon.Name = "Icon"
+        icon.AnchorPoint = Vector2.new(0.5, 0.5)
+        icon.BackgroundTransparency = 1
+        icon.Image = "rbxassetid://" .. tostring(iconId)
+        icon.ImageColor3 = Color3.fromRGB(69, 71, 90)
+        icon.Position = UDim2.fromScale(0.5, 0.5)
+        icon.Size = UDim2.fromOffset(24, 22)
+        icon.Parent = tab
+
+        local divider = Instance.new("Frame")
+        divider.Name = "Divider"
+        divider.AnchorPoint = Vector2.new(0.5, 1)
+        divider.BackgroundTransparency = 1
+        divider.ClipsDescendants = true
+        divider.Position = UDim2.fromScale(0.5, 1)
+        divider.Size = UDim2.fromOffset(55, 5)
+        divider.Parent = tab
+
+        local uICorner4 = Instance.new("UICorner")
+        uICorner4.CornerRadius = UDim.new(0, 5)
+        uICorner4.Parent = divider
+
+        local frame1 = Instance.new("Frame")
+        frame1.Name = "Frame"
+        frame1.AnchorPoint = Vector2.new(0.5, 1)
+        frame1.BackgroundColor3 = Color3.fromRGB(31, 31, 45)
+        frame1.Position = UDim2.new(0.5, 0, 1, 3)
+        frame1.Size = UDim2.fromOffset(25, 6)
+        frame1.Parent = divider
+
+        local uICorner5 = Instance.new("UICorner")
+        uICorner5.CornerRadius = UDim.new(0, 12)
+        uICorner5.Parent = frame1
+
+        local pagenScrolling = Instance.new("ScrollingFrame")
+        pagenScrolling.Name = "PagenScrolling"
+        pagenScrolling.Active = true
+        pagenScrolling.AnchorPoint = Vector2.new(0.5, 0.5)
+        pagenScrolling.BackgroundTransparency = 1
+        pagenScrolling.CanvasPosition = Vector2.new(0, 0)
+        pagenScrolling.Position = UDim2.fromScale(0.496496, 0.498638)
+        pagenScrolling.ScrollBarImageColor3 = Color3.new()
+        pagenScrolling.ScrollBarThickness = 5
+        pagenScrolling.Size = UDim2.fromOffset(665, 458)
+        pagenScrolling.Visible = false
+        pagenScrolling.Parent = self.PageHolder
+
+        local uICorner19 = Instance.new("UICorner")
+        uICorner19.CornerRadius = UDim.new(0, 14)
+        uICorner19.Parent = pagenScrolling
+
+        local uIListLayout1 = Instance.new("UIListLayout")
+        uIListLayout1.FillDirection = Enum.FillDirection.Horizontal
+        uIListLayout1.Padding = UDim.new(0, 14)
+        uIListLayout1.SortOrder = Enum.SortOrder.LayoutOrder
+        uIListLayout1.Parent = pagenScrolling
+
+        local uIPadding1 = Instance.new("UIPadding")
+        uIPadding1.PaddingLeft = UDim.new(0, 18)
+        uIPadding1.PaddingTop = UDim.new(0, 25)
+        uIPadding1.Parent = pagenScrolling
+
+        tabData.Button = tab
+        tabData.Page = pagenScrolling
+        tabData.Icon = icon
+
+        table.insert(self.Tabs, tabData)
+
+        if not self.FirstTab then
+            self.FirstTab = tabData
+        end
+
+        tab.MouseButton1Click:Connect(function()
+            if self.CurrentTab == tabData then return end
+            
+            for _, t in ipairs(self.Tabs) do
+                t.Page.Visible = false
+                t.Button.BackgroundTransparency = 1
+                t.Icon.ImageColor3 = Color3.fromRGB(69, 71, 90)
+            end
+
+            tabData.Page.Visible = true
+            tabData.Button.BackgroundTransparency = 0.9
+            tabData.Icon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+
+            local gradient = Instance.new("UIGradient")
+            gradient.Color = ColorSequence.new({
+                ColorSequenceKeypoint.new(0, Color3.fromRGB(235, 100, 52)),
+                ColorSequenceKeypoint.new(0.313149, Color3.fromRGB(243, 131, 39)),
+                ColorSequenceKeypoint.new(0.536332, Color3.fromRGB(255, 157, 0)),
+                ColorSequenceKeypoint.new(0.647059, Color3.fromRGB(255, 157, 0)),
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(235, 100, 52)),
+            })
+            gradient.Rotation = 70
+            
+            for _, g in ipairs(tabData.Icon:GetChildren()) do
+                if g:IsA("UIGradient") then g:Destroy() end
+            end
+            gradient:Clone().Parent = tabData.Icon
+
+            self.CurrentTab = tabData
+
+            local relativeY = (tab.AbsolutePosition.Y - self.SidebarAnother.AbsolutePosition.Y) + (tab.AbsoluteSize.Y / 2)
+            TweenService:Create(self.Liner, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+                Position = UDim2.new(1, 0, 0, relativeY)
+            }):Play()
+        end)
+
+        return tabData
+    end
+
+    function Window:SelectFirst()
+        if self.FirstTab then
+            -- Initial forced layout update for AbsolutePosition
+            self.Holder.UIListLayout:ApplyLayout()
+            
+            local tabData = self.FirstTab
+            local tab = tabData.Button
+            
+            tabData.Page.Visible = true
+            tabData.Button.BackgroundTransparency = 0.9
+            tabData.Icon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+
+            local gradient = Instance.new("UIGradient")
+            gradient.Color = ColorSequence.new({
+                ColorSequenceKeypoint.new(0, Color3.fromRGB(235, 100, 52)),
+                ColorSequenceKeypoint.new(0.313149, Color3.fromRGB(243, 131, 39)),
+                ColorSequenceKeypoint.new(0.536332, Color3.fromRGB(255, 157, 0)),
+                ColorSequenceKeypoint.new(0.647059, Color3.fromRGB(255, 157, 0)),
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(235, 100, 52)),
+            })
+            gradient.Rotation = 70
+            gradient:Clone().Parent = tabData.Icon
+
+            self.CurrentTab = tabData
+
+            task.spawn(function()
+                task.wait(0.05) 
+                local relativeY = (tab.AbsolutePosition.Y - self.SidebarAnother.AbsolutePosition.Y) + (tab.AbsoluteSize.Y / 2)
+                self.Liner.Position = UDim2.new(1, 0, 0, relativeY)
+            end)
+        end
+    end
+
+    return Window
 end
 
-local function play(obj, info, props)
-	TweenService:Create(obj, info, props):Play()
-end
-
-local function host()
-	if typeof(gethui) == "function" then
-		local ok, h = pcall(gethui)
-		if ok and h then return h end
-	end
-	local cg = game:GetService("CoreGui")
-	local canUse = pcall(function()
-		local probe = Instance.new("ScreenGui")
-		probe.Parent = cg
-		probe:Destroy()
-	end)
-	if canUse then return cg end
-	return Players.LocalPlayer:WaitForChild("PlayerGui")
-end
-
--- helper for slider / drag: returns fractional position of x within a frame
-local function fractionAt(frame, x)
-	local origin, width = frame.AbsolutePosition.X, frame.AbsoluteSize.X
-	if width <= 0 then return 0 end
-	return math.clamp((x - origin) / width, 0, 1)
-end
-
-
-local Toggle = {}
-Toggle.__index = Toggle
-
-function Toggle:Set(state, silent)
-	state = not not state
-	if state == self._on then return end
-	self._on = state
-
-	local target = state and self._accent or palette.control
-	play(self._box, FAST, { BackgroundColor3 = target })
-	play(self._stroke, FAST, { Transparency = state and 1 or 0 })
-	play(self._check, FAST, { TextTransparency = state and 0 or 1 })
-	play(self._label, FAST, { TextColor3 = state and palette.text or palette.muted })
-
-	if not silent and self._cb then
-		task.spawn(self._cb, state)
-	end
-end
-
-function Toggle:Get() return self._on end
-function Toggle:OnChanged(fn) self._cb = fn end
-
-
-local Slider = {}
-Slider.__index = Slider
-
-function Slider:_apply(value, silent, animate)
-	local step = self._step
-	if step > 0 then
-		value = math.floor(value / step + 0.5) * step
-	end
-	value = math.clamp(value, self._min, self._max)
-	if value == self._value and not animate then return end
-	self._value = value
-
-	local alpha = (value - self._min) / (self._max - self._min)
-	local size = UDim2.fromScale(alpha, 1)
-	if animate then
-		play(self._fill, FAST, { Size = size })
-	else
-		self._fill.Size = size
-	end
-	self._valueLbl.Text = self._fmt(value)
-
-	if not silent and self._cb then
-		task.spawn(self._cb, value)
-	end
-end
-
-function Slider:Set(value, silent)
-	self:_apply(value, silent, true)
-end
-
-function Slider:Get() return self._value end
-function Slider:OnChanged(fn) self._cb = fn end
-
-
-local Section = {}
-Section.__index = Section
-
-function Section:AddToggle(opts)
-	opts = opts or {}
-
-	local row = make("Frame", {
-		Name = "ToggleRow",
-		BackgroundTransparency = 1,
-		Size = UDim2.new(1, 0, 0, 26),
-	})
-
-	local box = make("Frame", {
-		AnchorPoint = Vector2.new(0, 0.5),
-		BackgroundColor3 = palette.control,
-		BorderSizePixel = 0,
-		Position = UDim2.new(0, 9, 0.5, 0),
-		Size = UDim2.fromOffset(16, 16),
-		Parent = row,
-	})
-	make("UICorner", { CornerRadius = UDim.new(0, 3), Parent = box })
-	local stroke = make("UIStroke", {
-		Color = palette.ctrlStroke,
-		Thickness = 1,
-		Parent = box,
-	})
-
-	-- Crisp vector check mark via bold unicode glyph
-	local check = make("TextLabel", {
-		Name = "Check",
-		AnchorPoint = Vector2.new(0.5, 0.5),
-		BackgroundTransparency = 1,
-		FontFace = FONT_BOLD,
-		Position = UDim2.new(0.5, 0, 0.5, 1),
-		Size = UDim2.fromScale(1, 1),
-		Text = "✓",
-		TextColor3 = Color3.new(0, 0, 0),
-		TextScaled = true,
-		TextTransparency = 1,
-		Parent = box,
-	})
-	make("UITextSizeConstraint", { MaxTextSize = 14, Parent = check })
-
-	local label = make("TextLabel", {
-		AnchorPoint = Vector2.new(0, 0.5),
-		AutomaticSize = Enum.AutomaticSize.X,
-		BackgroundTransparency = 1,
-		FontFace = FONT,
-		Position = UDim2.new(0, 33, 0.5, 0),
-		Size = UDim2.fromOffset(0, 14),
-		Text = opts.Name or "Toggle",
-		TextColor3 = palette.muted,
-		TextSize = 14,
-		TextXAlignment = Enum.TextXAlignment.Left,
-		Parent = row,
-	})
-
-	local hit = make("TextButton", {
-		AutoButtonColor = false,
-		BackgroundTransparency = 1,
-		Size = UDim2.fromScale(1, 1),
-		Text = "",
-		Parent = row,
-	})
-
-	local self_ = setmetatable({
-		_on      = false,
-		_cb      = opts.Callback,
-		_accent  = self._tab._window.Accent,
-		_box     = box,
-		_stroke  = stroke,
-		_check   = check,
-		_label   = label,
-	}, Toggle)
-
-	hit.MouseButton1Click:Connect(function()
-		self_:Set(not self_._on)
-	end)
-	hit.MouseEnter:Connect(function()
-		if not self_._on then
-			play(stroke, FAST, { Color = palette.ctrlHover })
-		end
-	end)
-	hit.MouseLeave:Connect(function()
-		if not self_._on then
-			play(stroke, FAST, { Color = palette.ctrlStroke })
-		end
-	end)
-
-	row.Parent = self._holder
-	if opts.Default then
-		self_:Set(true, true)
-	end
-	return self_
-end
-
-function Section:AddSlider(opts)
-	opts = opts or {}
-	local min = opts.Min or 0
-	local max = opts.Max or 100
-	local step = opts.Increment or opts.Step or 1
-	local default = math.clamp(opts.Default or min, min, max)
-	local fmt = opts.Format or tostring
-
-	local accent = self._tab._window.Accent
-
-	local row = make("Frame", {
-		Name = "SliderRow",
-		BackgroundTransparency = 1,
-		Size = UDim2.new(1, 0, 0, 38),
-	})
-
-	make("TextLabel", {
-		Name = "Name",
-		BackgroundTransparency = 1,
-		FontFace = FONT,
-		Position = UDim2.new(0, 9, 0, 2),
-		Size = UDim2.new(1, -18, 0, 14),
-		Text = opts.Name or "Slider",
-		TextColor3 = palette.muted,
-		TextSize = 14,
-		TextXAlignment = Enum.TextXAlignment.Left,
-		Parent = row,
-	})
-
-	local valueLbl = make("TextLabel", {
-		Name = "Value",
-		AnchorPoint = Vector2.new(1, 0),
-		BackgroundTransparency = 1,
-		FontFace = FONT,
-		Position = UDim2.new(1, -9, 0, 2),
-		Size = UDim2.fromOffset(80, 14),
-		Text = fmt(default),
-		TextColor3 = palette.muted,
-		TextSize = 14,
-		TextXAlignment = Enum.TextXAlignment.Right,
-		Parent = row,
-	})
-
-	local bar = make("Frame", {
-		Name = "Bar",
-		AnchorPoint = Vector2.new(0, 1),
-		BackgroundColor3 = palette.barBg,
-		BorderSizePixel = 0,
-		Position = UDim2.new(0, 9, 1, -6),
-		Size = UDim2.new(1, -18, 0, 7),
-		Parent = row,
-	})
-	make("UICorner", { CornerRadius = UDim.new(1, 0), Parent = bar })
-	make("UIStroke", { Color = palette.barStroke, Parent = bar })
-
-	local fill = make("Frame", {
-		Name = "Fill",
-		BackgroundColor3 = accent,
-		BorderSizePixel = 0,
-		Size = UDim2.fromScale(0, 1),
-		Parent = bar,
-	})
-	make("UICorner", { CornerRadius = UDim.new(1, 0), Parent = fill })
-	make("UIGradient", {
-		Color = ColorSequence.new({
-			ColorSequenceKeypoint.new(0, accent),
-			ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 165, 100)),
-		}),
-		Parent = fill,
-	})
-
-	-- Taller hit box than the bar so dragging feels forgiving.
-	local hit = make("TextButton", {
-		AutoButtonColor = false,
-		BackgroundTransparency = 1,
-		Position = UDim2.new(0, 0, 0.5, -9),
-		Size = UDim2.new(1, 0, 0, 18),
-		Text = "",
-		Parent = bar,
-	})
-
-	local self_ = setmetatable({
-		_value    = default,
-		_min      = min,
-		_max      = max,
-		_step     = step,
-		_cb       = opts.Callback,
-		_fmt      = fmt,
-		_fill     = fill,
-		_valueLbl = valueLbl,
-	}, Slider)
-
-	local dragging = false
-	local function updateFromX(x)
-		local f = fractionAt(bar, x)
-		self_:_apply(min + f * (max - min), false, false)
-	end
-
-	hit.MouseButton1Down:Connect(function()
-		dragging = true
-		play(fill, FAST, { BackgroundColor3 = accent:Lerp(Color3.new(1, 1, 1), 0.08) })
-		updateFromX(UserInputService:GetMouseLocation().X)
-	end)
-
-	UserInputService.InputChanged:Connect(function(input)
-		if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-			updateFromX(input.Position.X)
-		end
-	end)
-
-	UserInputService.InputEnded:Connect(function(input)
-		if dragging and input.UserInputType == Enum.UserInputType.MouseButton1 then
-			dragging = false
-			play(fill, FAST, { BackgroundColor3 = accent })
-		end
-	end)
-
-	self_:_apply(default, true, false)
-	row.Parent = self._holder
-	return self_
-end
-
-
-local Tab = {}
-Tab.__index = Tab
-
-function Tab:CreateSection(opts)
-	opts = opts or {}
-	local side = opts.Side == "Right" and "Right" or "Left"
-
-	-- Layout order interleaves Left/Right so two columns line up cleanly.
-	local order
-	if side == "Left" then
-		self._leftCount += 1
-		order = (self._leftCount - 1) * 2
-	else
-		self._rightCount += 1
-		order = (self._rightCount - 1) * 2 + 1
-	end
-
-	local frame = make("Frame", {
-		Name = "Section_" .. side,
-		AutomaticSize = Enum.AutomaticSize.Y,
-		BackgroundColor3 = palette.section,
-		BackgroundTransparency = 0.45,
-		BorderSizePixel = 0,
-		LayoutOrder = order,
-		Size = UDim2.fromOffset(341, 0),
-	})
-	make("UICorner", { CornerRadius = UDim.new(0, 6), Parent = frame })
-	make("UIStroke", { Color = palette.secStroke, Parent = frame })
-
-	local header = make("Frame", {
-		Name = "Header",
-		BackgroundColor3 = palette.secHeader,
-		BorderSizePixel = 0,
-		ClipsDescendants = true,
-		Size = UDim2.new(1, 0, 0, 30),
-		Parent = frame,
-	})
-	make("Frame", {
-		Name = "Liner",
-		AnchorPoint = Vector2.new(0.5, 1),
-		BackgroundColor3 = palette.liner,
-		BorderSizePixel = 0,
-		Position = UDim2.fromScale(0.5, 1),
-		Size = UDim2.new(1, 0, 0, 1),
-		Parent = header,
-	})
-	make("TextLabel", {
-		AnchorPoint = Vector2.new(0, 0.5),
-		AutomaticSize = Enum.AutomaticSize.XY,
-		BackgroundTransparency = 1,
-		FontFace = FONT,
-		Position = UDim2.new(0, 9, 0.5, 0),
-		Size = UDim2.fromOffset(1, 1),
-		Text = opts.Name or "Section",
-		TextColor3 = palette.text,
-		TextSize = 14,
-		Parent = header,
-	})
-
-	local holder = make("Frame", {
-		Name = "Items",
-		AutomaticSize = Enum.AutomaticSize.Y,
-		BackgroundTransparency = 1,
-		Position = UDim2.fromOffset(0, 30),
-		Size = UDim2.new(1, 0, 0, 0),
-		Parent = frame,
-	})
-	make("UIListLayout", {
-		FillDirection = Enum.FillDirection.Vertical,
-		HorizontalAlignment = Enum.HorizontalAlignment.Left,
-		Padding = UDim.new(0, 2),
-		SortOrder = Enum.SortOrder.LayoutOrder,
-		Parent = holder,
-	})
-	make("UIPadding", {
-		PaddingTop = UDim.new(0, 6),
-		PaddingBottom = UDim.new(0, 10),
-		Parent = holder,
-	})
-
-	frame.Parent = self._container
-	return setmetatable({
-		_tab    = self,
-		_frame  = frame,
-		_holder = holder,
-		_side   = side,
-	}, Section)
-end
-
-
-local Window = {}
-Window.__index = Window
-
-function Window:_resolveCenterX(tab)
-	local wrapX = self._tabsWrap.AbsolutePosition.X
-	local tabX = tab._holder.AbsolutePosition.X
-	if tabX > 0 then
-		return (tabX + tab._holder.AbsoluteSize.X * 0.5) - wrapX
-	end
-	-- Geometry fallback before layout has solved.
-	return TABS_LPAD + (tab._index - 1) * (TAB_W + TAB_GAP) + TAB_W * 0.5
-end
-
-function Window:_moveIndicator(tab, animate)
-	local x = self:_resolveCenterX(tab)
-	local target = UDim2.new(0, x, 1, 15)
-	if animate then
-		play(self._indicator, MED, { Position = target })
-	else
-		self._indicator.Position = target
-	end
-end
-
-function Window:SelectTab(index)
-	local next_ = self._tabs[index]
-	if not next_ or self._selected == index then return end
-
-	local prev = self._tabs[self._selected]
-	if prev then
-		play(prev._image, FAST, { ImageColor3 = palette.idle })
-		local page = prev._page
-		play(page, FAST, { GroupTransparency = 1 })
-		task.delay(0.16, function()
-			if self._selected ~= prev._index then
-				page.Visible = false
-			end
-		end)
-	end
-
-	next_._page.GroupTransparency = 1
-	next_._page.Visible = true
-	play(next_._page, FAST, { GroupTransparency = 0 })
-	play(next_._image, FAST, { ImageColor3 = self.Accent })
-
-	self._selected = index
-	self:_moveIndicator(next_, prev ~= nil)
-end
-
-function Window:CreateTab(opts)
-	opts = opts or {}
-	local index = #self._tabs + 1
-
-	local holder = make("Frame", {
-		Name = "Tab" .. index,
-		BackgroundTransparency = 1,
-		LayoutOrder = index,
-		Size = UDim2.fromOffset(TAB_W, TAB_H),
-		Parent = self._tabsList,
-	})
-
-	local image = make("ImageButton", {
-		AnchorPoint = Vector2.new(0.5, 0.5),
-		AutoButtonColor = false,
-		BackgroundTransparency = 1,
-		Image = opts.Icon or "",
-		ImageColor3 = palette.idle,
-		Position = UDim2.fromScale(0.5, 0.5),
-		Size = UDim2.fromOffset(30, 30),
-		ZIndex = 5,
-		Parent = holder,
-	})
-
-	local page = make("CanvasGroup", {
-		Name = "Page" .. index,
-		BackgroundTransparency = 1,
-		BorderSizePixel = 0,
-		GroupTransparency = 1,
-		Size = UDim2.fromScale(1, 1),
-		Visible = false,
-		Parent = self._pages,
-	})
-
-	local scroller = make("ScrollingFrame", {
-		Active = true,
-		AnchorPoint = Vector2.new(0.5, 0.5),
-		AutomaticCanvasSize = Enum.AutomaticSize.Y,
-		BackgroundTransparency = 1,
-		BorderSizePixel = 0,
-		BottomImage = "",
-		CanvasSize = UDim2.new(),
-		Position = UDim2.fromScale(0.5, 0.5),
-		ScrollBarImageColor3 = self.Accent,
-		ScrollBarThickness = 4,
-		Size = UDim2.new(1, -16, 1, -20),
-		TopImage = "",
-		Parent = page,
-	})
-	make("UIListLayout", {
-		FillDirection = Enum.FillDirection.Horizontal,
-		Padding = UDim.new(0, 10),
-		SortOrder = Enum.SortOrder.LayoutOrder,
-		Wraps = true,
-		Parent = scroller,
-	})
-	make("UIPadding", {
-		PaddingTop = UDim.new(0, 10),
-		PaddingLeft = UDim.new(0, 10),
-		PaddingRight = UDim.new(0, 10),
-		PaddingBottom = UDim.new(0, 10),
-		Parent = scroller,
-	})
-
-	local tab = setmetatable({
-		_window      = self,
-		_index       = index,
-		_holder      = holder,
-		_image       = image,
-		_page        = page,
-		_container   = scroller,
-		_leftCount   = 0,
-		_rightCount  = 0,
-	}, Tab)
-
-	self._tabs[index] = tab
-
-	image.MouseButton1Click:Connect(function()
-		self:SelectTab(index)
-	end)
-	image.MouseEnter:Connect(function()
-		if self._selected ~= index then
-			play(image, FAST, { ImageColor3 = palette.hover })
-		end
-	end)
-	image.MouseLeave:Connect(function()
-		if self._selected ~= index then
-			play(image, FAST, { ImageColor3 = palette.idle })
-		end
-	end)
-
-	if index == 1 then
-		task.spawn(function()
-			RunService.Heartbeat:Wait()
-			RunService.Heartbeat:Wait()
-			self:SelectTab(1)
-		end)
-	end
-
-	return tab
-end
-
-
-local ElectroLib = {}
-
-function ElectroLib:CreateWindow(opts)
-	opts = opts or {}
-	local accent = opts.Accent or palette.accent
-
-	local gui = make("ScreenGui", {
-		Name = "ElectroLib",
-		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-		ResetOnSpawn = false,
-		IgnoreGuiInset = true,
-	})
-
-	local root = make("Frame", {
-		Name = "Window",
-		AnchorPoint = Vector2.new(0.5, 0.5),
-		BackgroundColor3 = palette.window,
-		BorderSizePixel = 0,
-		Position = UDim2.fromScale(0.5, 0.5),
-		Size = UDim2.fromOffset(747, 594),
-		Parent = gui,
-	})
-	make("UICorner", { CornerRadius = UDim.new(0, 14), Parent = root })
-
-	local headerWrap = make("Frame", {
-		BackgroundTransparency = 1,
-		ClipsDescendants = true,
-		Size = UDim2.new(1, 0, 0, 69),
-		Parent = root,
-	})
-
-	local header = make("Frame", {
-		Name = "Header",
-		AnchorPoint = Vector2.new(0, 0.5),
-		BackgroundColor3 = palette.header,
-		BorderSizePixel = 0,
-		ClipsDescendants = true,
-		Position = UDim2.new(0, 0, 0.5, 0),
-		Size = UDim2.new(1, 0, 0, 64),
-		Parent = headerWrap,
-	})
-	make("UICorner", { CornerRadius = UDim.new(0, 14), Parent = header })
-
-	local brand = make("Frame", {
-		Name = "Brand",
-		AnchorPoint = Vector2.new(0, 0.5),
-		BackgroundTransparency = 1,
-		ClipsDescendants = true,
-		Position = UDim2.new(0, 0, 0.5, 0),
-		Size = UDim2.fromOffset(131, 73),
-		Parent = header,
-	})
-	make("ImageLabel", {
-		Name = "BrandGlow",
-		AnchorPoint = Vector2.new(0.5, 0.5),
-		BackgroundTransparency = 1,
-		Image = "rbxassetid://95531037500951",
-		Position = UDim2.fromScale(0.377863, 0.541096),
-		Size = UDim2.fromOffset(195, 197),
-		Parent = brand,
-	})
-	make("ImageLabel", {
-		Name = "Logo",
-		AnchorPoint = Vector2.new(0, 0.5),
-		BackgroundTransparency = 1,
-		Image = opts.Logo or "rbxassetid://128573523116063",
-		Position = UDim2.fromScale(-0.0992366, 0.541096),
-		Size = UDim2.fromOffset(69, 41),
-		Parent = brand,
-	})
-	make("TextLabel", {
-		Name = "Title",
-		AnchorPoint = Vector2.new(1, 0.5),
-		BackgroundTransparency = 1,
-		FontFace = FONT_BOLD,
-		Position = UDim2.fromScale(0.847328, 0.541096),
-		Size = UDim2.fromOffset(55, 37),
-		Text = opts.Title or "ELECTRO.FUN",
-		TextColor3 = palette.brand,
-		TextSize = 15,
-		Parent = brand,
-	})
-
-	local tabsWrap = make("Frame", {
-		Name = "Tabs",
-		BackgroundTransparency = 1,
-		Position = UDim2.fromScale(0.215894, 0),
-		Size = UDim2.fromOffset(437, 64),
-		Parent = header,
-	})
-
-	local initX = TABS_LPAD + TAB_W * 0.5
-
-	local tabsList = make("Frame", {
-		Name = "TabsList",
-		BackgroundTransparency = 1,
-		Size = UDim2.fromScale(1, 1),
-		ZIndex = 3,
-		Parent = tabsWrap,
-	})
-	make("UIListLayout", {
-		FillDirection = Enum.FillDirection.Horizontal,
-		Padding = UDim.new(0, TAB_GAP),
-		SortOrder = Enum.SortOrder.LayoutOrder,
-		Parent = tabsList,
-	})
-	make("UIPadding", {
-		PaddingLeft = UDim.new(0, TABS_LPAD),
-		PaddingTop = UDim.new(0, 5),
-		Parent = tabsList,
-	})
-
-	local indicator = make("Frame", {
-		Name = "Indicator",
-		AnchorPoint = Vector2.new(0.5, 1),
-		BackgroundColor3 = accent,
-		BorderSizePixel = 0,
-		ClipsDescendants = true,
-		Position = UDim2.new(0, initX, 1, 15),
-		Size = UDim2.fromOffset(40, 21),
-		ZIndex = 4,
-		Parent = tabsWrap,
-	})
-	make("UICorner", { CornerRadius = UDim.new(1, 0), Parent = indicator })
-	make("ImageLabel", {
-		Name = "Glow",
-		AnchorPoint = Vector2.new(0.5, 0.5),
-		BackgroundTransparency = 1,
-		Image = "rbxassetid://83933299080110",
-		ImageColor3 = Color3.fromRGB(255, 170, 110),
-		ImageTransparency = 0.15,
-		Position = UDim2.fromScale(0.5, 0.5),
-		Size = UDim2.fromOffset(70, 34),
-		Parent = indicator,
-	})
-
-	local pages = make("Frame", {
-		Name = "Pages",
-		BackgroundTransparency = 1,
-		ClipsDescendants = true,
-		Position = UDim2.new(0, 0, 0, 69),
-		Size = UDim2.new(1, 0, 1, -69),
-		Parent = root,
-	})
-
-	local window = setmetatable({
-		Accent     = accent,
-		_gui       = gui,
-		_root      = root,
-		_header    = header,
-		_tabsWrap  = tabsWrap,
-		_tabsList  = tabsList,
-		_indicator = indicator,
-		_pages     = pages,
-		_tabs      = {},
-		_selected  = 0,
-	}, Window)
-
-	gui.Parent = host()
-	return window
-end
-
-return ElectroLib
+return Library
