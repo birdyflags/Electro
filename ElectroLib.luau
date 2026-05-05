@@ -283,12 +283,12 @@ function Library:Init(title)
         if not self.FirstTab then
             self.FirstTab = tabData
             
-            -- Parent to Sidebar (not SidebarAnother) to avoid ClipsDescendants clipping during tween
+            -- Parent to SidebarAnother; height increased to 600 to accommodate LinerTab movement
             local lINERTAB1 = Instance.new("Frame")
             lINERTAB1.Name = "LINERTAB1"
             lINERTAB1.AnchorPoint = Vector2.new(1, 0.5)
             lINERTAB1.BackgroundColor3 = Color3.fromRGB(254, 254, 254)
-            lINERTAB1.Position = UDim2.new(1, -2, 0, 31.5) -- Hardcoded for first tab center
+            lINERTAB1.Position = UDim2.new(1, -2, 0, 122) -- First tab center: (600-436)/2 + 10pad + 30half = 122
             lINERTAB1.Size = UDim2.fromOffset(27, 33)
             lINERTAB1.ZIndex = 10
             lINERTAB1.Parent = self.SidebarAnother
@@ -349,8 +349,8 @@ function Library:Init(title)
             self.CurrentTab = tabData
 
             if self.LinerTab then
-                -- Hardcoded math exactly calculating the offset for tab `i` based on UIListLayout constraints
-                local targetY = 31.5 + (tabIndex - 1) * 65
+                -- Calculate target Y: starts at 122 (first tab center), 65px spacing
+                local targetY = 122 + (tabIndex - 1) * 65
                 TweenService:Create(self.LinerTab, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
                     Position = UDim2.new(1, -2, 0, targetY)
                 }):Play()
