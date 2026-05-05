@@ -80,14 +80,28 @@ function Library:Init()
     uIPadding.PaddingTop = UDim.new(0, 10)
     uIPadding.Parent = holder
 
-    local liner = Instance.new("Frame")
-    liner.Name = "Liner"
-    liner.AnchorPoint = Vector2.new(1, 0.5)
-    liner.BackgroundColor3 = Color3.fromRGB(31, 31, 45)
-    liner.BorderSizePixel = 0
-    liner.Position = UDim2.fromScale(1, 0.530293)
-    liner.Size = UDim2.new(0, 2, 0, 60)
-    liner.Parent = sidebaranother
+    local indicator = Instance.new("Frame")
+    indicator.Name = "Indicator"
+    indicator.AnchorPoint = Vector2.new(1, 0.5)
+    indicator.BackgroundColor3 = Color3.fromRGB(254, 254, 254)
+    indicator.Position = UDim2.new(1, -5, 0, 0) -- Adjusted X slightly to fit sidebar
+    indicator.Size = UDim2.fromOffset(27, 33)
+    indicator.Parent = sidebaranother
+
+    local indCorner = Instance.new("UICorner")
+    indCorner.CornerRadius = UDim.new(0, 12)
+    indCorner.Parent = indicator
+
+    local indGradient = Instance.new("UIGradient")
+    indGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(235, 100, 52)),
+        ColorSequenceKeypoint.new(0.313149, Color3.fromRGB(243, 131, 39)),
+        ColorSequenceKeypoint.new(0.536332, Color3.fromRGB(255, 157, 0)),
+        ColorSequenceKeypoint.new(0.647059, Color3.fromRGB(255, 157, 0)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(235, 100, 52)),
+    })
+    indGradient.Rotation = 70
+    indGradient.Parent = indicator
 
     local pageholder = Instance.new("Frame")
     pageholder.Name = "Pageholder"
@@ -100,7 +114,7 @@ function Library:Init()
 
     Window.SidebarAnother = sidebaranother
     Window.Holder = holder
-    Window.Liner = liner
+    Window.Indicator = indicator
     Window.PageHolder = pageholder
 
     function Window:CreateTab(iconId)
@@ -223,8 +237,8 @@ function Library:Init()
             self.CurrentTab = tabData
 
             local relativeY = (tab.AbsolutePosition.Y - self.SidebarAnother.AbsolutePosition.Y) + (tab.AbsoluteSize.Y / 2)
-            TweenService:Create(self.Liner, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                Position = UDim2.new(1, 0, 0, relativeY)
+            TweenService:Create(self.Indicator, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+                Position = UDim2.new(1, -5, 0, relativeY)
             }):Play()
         end)
 
@@ -259,7 +273,7 @@ function Library:Init()
             task.spawn(function()
                 task.wait(0.05) 
                 local relativeY = (tab.AbsolutePosition.Y - self.SidebarAnother.AbsolutePosition.Y) + (tab.AbsoluteSize.Y / 2)
-                self.Liner.Position = UDim2.new(1, 0, 0, relativeY)
+                self.Indicator.Position = UDim2.new(1, -5, 0, relativeY)
             end)
         end
     end
