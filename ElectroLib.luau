@@ -1,13 +1,9 @@
-local stellar = {}
 local players = game:GetService("Players")
 local uis = game:GetService("UserInputService")
 local ts = game:GetService("TweenService")
-local run = game:GetService("RunService")
-local http = game:GetService("HttpService")
 local coregui = game:GetService("CoreGui")
 
 local plr = players.LocalPlayer
-local mouse = plr:GetMouse()
 
 local clamp = math.clamp
 local fromrgb = Color3.fromRGB
@@ -21,6 +17,9 @@ local darker = fromrgb(14, 14, 14)
 local darker2 = fromrgb(21, 21, 21)
 local textcol = fromrgb(255, 255, 255)
 local texthover = fromrgb(255, 200, 150)
+
+local currentlib = nil
+local currenttab = nil
 
 local function ismobile()
     return uis.TouchEnabled
@@ -80,16 +79,11 @@ local function makedraggable(gui)
     end)
 end
 
-local screens = {}
-local toggles = {}
-local tabs = {}
-local currenttab = nil
-
-function stellar.new(name)
-    local self = {}
-    self.name = name or "stellarzfun"
-    self.open = false
-    self.tabs = {}
+local function new(name)
+    local lib = {}
+    lib.name = name or "stellarzfun"
+    lib.open = false
+    lib.tabs = {}
     
     local screensize = workspace.CurrentCamera.ViewportSize
     local ismob = ismobile()
@@ -97,7 +91,7 @@ function stellar.new(name)
     local uisize = ismob and fromoffset(math.min(screensize.X * 0.8, 400), math.min(screensize.Y * 0.6, 300)) or fromoffset(681, 480)
     
     local screen = Instance.new("ScreenGui")
-    screen.Name = self.name
+    screen.Name = lib.name
     screen.ResetOnSpawn = false
     screen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     screen.Parent = coregui
@@ -195,23 +189,23 @@ function stellar.new(name)
     pagelayout.Padding = new(0, 10)
     pagelayout.Parent = pagelist
     
-    self.screen = screen
-    self.main = main
-    self.tablist = tablist
-    self.subtablist = subtablist
-    self.pagelist = pagelist
-    self.tabcontainer = tabcontainer
-    self.content = content
-    self.subtabbar = subtabbar
-    self.pagecontainer = pagecontainer
+    lib.screen = screen
+    lib.main = main
+    lib.tablist = tablist
+    lib.subtablist = subtablist
+    lib.pagelist = pagelist
+    lib.tabcontainer = tabcontainer
+    lib.content = content
+    lib.subtabbar = subtabbar
+    lib.pagecontainer = pagecontainer
     
     screen.Enabled = false
     
-    function self:toggle()
-        self.open = not self.open
-        self.screen.Enabled = self.open
+    function lib:toggle()
+        lib.open = not lib.open
+        lib.screen.Enabled = lib.open
         
-        if self.open then
+        if lib.open then
             tween(main, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
                 Size = uisize
             })
@@ -222,7 +216,7 @@ function stellar.new(name)
         end
     end
     
-    function self:addtab(name)
+    function lib:addtab(name)
         local tab = {}
         tab.name = name
         tab.subtabs = {}
@@ -237,7 +231,7 @@ function stellar.new(name)
         btn.TextColor3 = textcol
         btn.TextSize = 14
         btn.Font = Enum.Font.Gotham
-        btn.Parent = self.tablist
+        btn.Parent = lib.tablist
         
         local btncorner = Instance.new("UICorner")
         btncorner.CornerRadius = new(0, 6)
@@ -248,7 +242,7 @@ function stellar.new(name)
         tabpage.BackgroundTransparency = 1
         tabpage.Size = new(1, 0, 1, 0)
         tabpage.Visible = false
-        tabpage.Parent = self.pagelist
+        tabpage.Parent = lib.pagelist
         
         local pagepad = Instance.new("UIPadding")
         pagepad.PaddingTop = new(0, 10)
@@ -312,7 +306,7 @@ function stellar.new(name)
             subbtn.TextColor3 = textcol
             subbtn.TextSize = 12
             subbtn.Font = Enum.Font.Gotham
-            subbtn.Parent = self.subtablist
+            subbtn.Parent = lib.subtablist
             
             local subbtncorner = Instance.new("UICorner")
             subbtncorner.CornerRadius = new(0, 4)
@@ -370,69 +364,150 @@ function stellar.new(name)
                 toggle.callback = callback or function() end
                 
                 local toggleframe = Instance.new("Frame")
-                toggleframe.Name = name
-                toggleframe.BackgroundColor3 = darker
-                toggleframe.Size = new(1, 0, 0, 30)
+                toggleframe.Name = "toggle"
+                toggleframe.BackgroundTransparency = 1
+                toggleframe.Size = fromoffset(237, 22)
                 toggleframe.Parent = subpage
                 
-                local togglecorner = Instance.new("UICorner")
-                togglecorner.CornerRadius = new(0, 4)
-                togglecorner.Parent = toggleframe
+                local toggleb = Instance.new("TextButton")
+                toggleb.Name = "toggleb"
+                toggleb.AnchorPoint = Vector2.new(1, 0.5)
+                toggleb.AutoButtonColor = false
+                toggleb.BackgroundColor3 = darker2
+                toggleb.Font = Enum.Font.Gotham
+                toggleb.LayoutOrder = 2
+                toggleb.Position = new(0.16, -5, 0.5, 0)
+                toggleb.Size = fromoffset(33, 18)
+                toggleb.Text = ""
+                toggleb.TextColor3 = Color3.new()
+                toggleb.TextSize = 14
+                toggleb.Parent = toggleframe
                 
-                local togglebtn = Instance.new("TextButton")
-                togglebtn.Name = "togglebtn"
-                togglebtn.BackgroundColor3 = accent
-                togglebtn.Size = new(0, 20, 0, 20)
-                togglebtn.Position = new(0, 8, 0.5, -10)
-                togglebtn.Text = ""
-                togglebtn.Parent = toggleframe
+                local uicorner13 = Instance.new("UICorner")
+                uicorner13.Name = "UICorner"
+                uicorner13.CornerRadius = new(0, 999)
+                uicorner13.Parent = toggleb
                 
-                local btnouter = Instance.new("UICorner")
-                btnouter.CornerRadius = new(0, 4)
-                btnouter.Parent = togglebtn
+                local bg = Instance.new("Frame")
+                bg.Name = "bg"
+                bg.BackgroundTransparency = 1
+                bg.BorderMode = Enum.BorderMode.Inset
+                bg.Position = fromoffset(0, 1)
+                bg.Size = new(1, -2, 1, -2)
+                bg.Parent = toggleb
                 
-                local togglelabel = Instance.new("TextLabel")
-                togglelabel.Name = "label"
-                togglelabel.BackgroundTransparency = 1
-                togglelabel.Position = new(0, 35, 0, 0)
-                togglelabel.Size = new(1, -40, 1, 0)
-                togglelabel.Text = name
-                togglelabel.TextColor3 = textcol
-                togglelabel.TextSize = 13
-                togglelabel.Font = Enum.Font.Gotham
-                togglelabel.TextXAlignment = Enum.TextXAlignment.Left
-                togglelabel.Parent = toggleframe
+                local uicorner14 = Instance.new("UICorner")
+                uicorner14.Name = "UICorner"
+                uicorner14.CornerRadius = new(0, 999)
+                uicorner14.Parent = bg
                 
-                togglebtn.MouseButton1Click:Connect(function()
+                local uigradient6 = Instance.new("UIGradient")
+                uigradient6.Name = "UIGradient"
+                uigradient6.Color = ColorSequence.new({
+                    ColorSequenceKeypoint.new(0, fromrgb(211, 211, 211)),
+                    ColorSequenceKeypoint.new(1, fromrgb(211, 211, 211)),
+                })
+                uigradient6.Parent = bg
+                
+                local ball = Instance.new("Frame")
+                ball.Name = "ball"
+                ball.BackgroundColor3 = Color3.new(1, 1, 1)
+                ball.Position = fromoffset(3, 2)
+                ball.Size = fromoffset(12, 12)
+                ball.Parent = bg
+                
+                local uicorner15 = Instance.new("UICorner")
+                uicorner15.Name = "UICorner"
+                uicorner15.CornerRadius = new(0, 999)
+                uicorner15.Parent = ball
+                
+                local uigradient7 = Instance.new("UIGradient")
+                uigradient7.Name = "UIGradient"
+                uigradient7.Color = ColorSequence.new({
+                    ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
+                    ColorSequenceKeypoint.new(1, fromrgb(141, 141, 141)),
+                })
+                uigradient7.Rotation = 1230
+                uigradient7.Transparency = NumberSequence.new({
+                    NumberSequenceKeypoint.new(0, 0.3),
+                    NumberSequenceKeypoint.new(1, 0.3),
+                })
+                uigradient7.Parent = ball
+                
+                local title = Instance.new("TextLabel")
+                title.Name = "title"
+                title.AutomaticSize = Enum.AutomaticSize.XY
+                title.BackgroundTransparency = 1
+                title.Font = Enum.Font.GothamSemibold
+                title.Position = new(0.165485, 0, 0.136364, 0)
+                title.Size = new(0.133647, 0, 0.727273, 0)
+                title.Text = name
+                title.TextColor3 = fromrgb(245, 245, 245)
+                title.TextSize = 14
+                title.TextXAlignment = Enum.TextXAlignment.Left
+                title.Parent = toggleframe
+                
+                local uipadding3 = Instance.new("UIPadding")
+                uipadding3.Name = "UIPadding"
+                uipadding3.PaddingLeft = new(0, 5)
+                uipadding3.PaddingRight = new(0, 5)
+                uipadding3.Parent = title
+                
+                local list = Instance.new("Frame")
+                list.Name = "list"
+                list.BackgroundColor3 = Color3.new(1, 1, 1)
+                list.BorderColor3 = Color3.new()
+                list.BorderSizePixel = 0
+                list.Position = new(1, 0, 0.25, 0)
+                list.Size = new(0, 0, 1, 0)
+                list.Parent = toggleframe
+                
+                local uilistlayout4 = Instance.new("UIListLayout")
+                uilistlayout4.Name = "UIListLayout"
+                uilistlayout4.FillDirection = Enum.FillDirection.Horizontal
+                uilistlayout4.HorizontalAlignment = Enum.HorizontalAlignment.Right
+                uilistlayout4.Padding = new(0, 9)
+                uilistlayout4.SortOrder = Enum.SortOrder.LayoutOrder
+                uilistlayout4.Parent = list
+                
+                toggleb.MouseButton1Click:Connect(function()
                     toggle.state = not toggle.state
                     toggle.callback(toggle.state)
                     
                     if toggle.state then
-                        tween(togglebtn, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+                        tween(toggleb, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
                             BackgroundColor3 = accent
                         })
-                        tween(togglebtn, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                            Size = new(0, 20, 0, 20)
+                        tween(ball, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+                            Position = fromoffset(17, 3)
                         })
+                        local uigradient9 = Instance.new("UIGradient")
+                        uigradient9.Name = "UIGradient"
+                        uigradient9.Color = ColorSequence.new({
+                            ColorSequenceKeypoint.new(0, accent),
+                            ColorSequenceKeypoint.new(1, fromrgb(200, 120, 40)),
+                        })
+                        uigradient9.Rotation = 90
+                        uigradient9.Parent = toggleb
                     else
-                        tween(togglebtn, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                            BackgroundColor3 = darker
+                        tween(toggleb, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+                            BackgroundColor3 = darker2
                         })
-                        tween(togglebtn, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                            Size = new(0, 18, 0, 18)
+                        tween(ball, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+                            Position = fromoffset(3, 2)
                         })
                     end
                 end)
                 
                 toggleframe.MouseEnter:Connect(function()
-                    tween(togglelabel, TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+                    tween(title, TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
                         TextColor3 = texthover
                     })
                 end)
                 
                 toggleframe.MouseLeave:Connect(function()
-                    tween(togglelabel, TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                        TextColor3 = textcol
+                    tween(title, TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+                        TextColor3 = fromrgb(245, 245, 245)
                     })
                 end)
                 
@@ -441,18 +516,18 @@ function stellar.new(name)
                     toggle.callback(state)
                     
                     if state then
-                        tween(togglebtn, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+                        tween(toggleb, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
                             BackgroundColor3 = accent
                         })
-                        tween(togglebtn, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                            Size = new(0, 20, 0, 20)
+                        tween(ball, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+                            Position = fromoffset(17, 3)
                         })
                     else
-                        tween(togglebtn, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                            BackgroundColor3 = darker
+                        tween(toggleb, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+                            BackgroundColor3 = darker2
                         })
-                        tween(togglebtn, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                            Size = new(0, 18, 0, 18)
+                        tween(ball, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+                            Position = fromoffset(3, 2)
                         })
                     end
                 end
@@ -467,17 +542,19 @@ function stellar.new(name)
                 button.callback = callback or function() end
                 
                 local btnframe = Instance.new("TextButton")
-                btnframe.Name = name
-                btnframe.BackgroundColor3 = darker
-                btnframe.Size = new(1, 0, 0, 30)
+                btnframe.Name = "Button"
+                btnframe.AutoButtonColor = false
+                btnframe.BackgroundColor3 = darker2
+                btnframe.Font = Enum.Font.GothamSemibold
+                btnframe.Size = new(1, 0, 0, 32)
                 btnframe.Text = name
-                btnframe.TextColor3 = textcol
-                btnframe.TextSize = 13
-                btnframe.Font = Enum.Font.Gotham
+                btnframe.TextColor3 = Color3.new(1, 1, 1)
+                btnframe.TextSize = 14
                 btnframe.Parent = subpage
                 
                 local btncorner = Instance.new("UICorner")
-                btncorner.CornerRadius = new(0, 4)
+                btncorner.Name = "UICorner"
+                btncorner.CornerRadius = new(0, 3)
                 btncorner.Parent = btnframe
                 
                 btnframe.MouseButton1Click:Connect(function()
@@ -485,15 +562,9 @@ function stellar.new(name)
                     tween(btnframe, TweenInfo.new(0.1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
                         BackgroundColor3 = accent
                     })
-                    tween(btnframe, TweenInfo.new(0.1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                        TextColor3 = dark
-                    })
                     task.wait(0.1)
                     tween(btnframe, TweenInfo.new(0.1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                        BackgroundColor3 = darker
-                    })
-                    tween(btnframe, TweenInfo.new(0.1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                        TextColor3 = textcol
+                        BackgroundColor3 = darker2
                     })
                 end)
                 
@@ -505,7 +576,7 @@ function stellar.new(name)
                 
                 btnframe.MouseLeave:Connect(function()
                     tween(btnframe, TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                        TextColor3 = textcol
+                        TextColor3 = Color3.new(1, 1, 1)
                     })
                 end)
                 
@@ -517,12 +588,11 @@ function stellar.new(name)
             return subtab
         end
         
-        table.insert(self.tabs, tab)
+        table.insert(lib.tabs, tab)
         return tab
     end
     
-    table.insert(screens, self)
-    return self
+    return lib
 end
 
 local function setupkeybind(lib)
@@ -564,8 +634,11 @@ local function setupkeybind(lib)
     end
 end
 
-function stellar.setup(lib)
+function setup(lib)
     setupkeybind(lib)
 end
 
-return stellar
+return {
+    new = new,
+    setup = setup
+}
