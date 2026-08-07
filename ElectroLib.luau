@@ -1,3 +1,6 @@
+local getgenv = getgenv or function() return _G end
+local cloneref = cloneref or function(obj) return obj end
+
 if getgenv().StellarLib then
     getgenv().StellarLib:Unload()
 end
@@ -11,7 +14,7 @@ local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
-local CoreGui = cloneref and cloneref(game:GetService("CoreGui")) or game:GetService("CoreGui")
+local CoreGui = cloneref(game:GetService("CoreGui"))
 
 local gethui = gethui or function()
     return CoreGui
