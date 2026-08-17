@@ -1184,6 +1184,11 @@ function Stellar:CreateWindow(options)
             mainUI.Visible = true
             self:FadeGroup(mainUI, true, fadeTime)
 
+            -- Ensure proper tab visibility when reopening
+            if windowObj.ActiveTab then
+                windowObj.ActiveTab:Select()
+            end
+
             task.delay(fadeTime, function()
                 animating = false
             end)
@@ -1383,6 +1388,7 @@ function Stellar:CreateWindow(options)
                 ImageColor3 = Color3.fromRGB(255, 255, 255)
             })
 
+            -- Hide all other tabs first
             for _, t in ipairs(windowObj.Tabs) do
                 if t ~= tabObj then
                     t.ContentArea.Visible = false
@@ -1393,12 +1399,14 @@ function Stellar:CreateWindow(options)
                 end
             end
 
+            -- Then show current tab
             tabObj.ContentArea.Visible = true
             tabObj.ContentArea.Position = UDim2.fromOffset(0, 12)
             Stellar:Tween(tabObj.ContentArea, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
                 Position = UDim2.fromOffset(0, 0)
             })
 
+            -- Handle subtabs
             for _, st in ipairs(tabObj.SubTabs) do
                 st.PillFrame.Visible = true
                 st.Content.Visible = (tabObj.ActiveSubTab == st)
