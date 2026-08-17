@@ -1203,38 +1203,12 @@ function Stellar:CreateWindow(options)
         end
     end)
 
-    local function formatDuration(seconds)
-        if not seconds or seconds <= 0 then
-            return "Expired"
-        end
-        local hours = math.floor(seconds / 3600)
-        local mins = math.floor((seconds % 3600) / 60)
-        if hours > 0 then
-            return string.format("%dh %02dm", hours, mins)
-        else
-            return string.format("%dm", mins)
-        end
-    end
-
-    local expiryUnix = options.Expires or (getgenv and getgenv().STELLARZ_EXPIRES) or _G.STELLARZ_EXPIRES
-    local remainingSec = options.Remaining or (getgenv and getgenv().STELLARZ_REMAINING) or _G.STELLARZ_REMAINING
-
-    if expiryUnix and not remainingSec then
-        remainingSec = math.max(0, expiryUnix - os.time())
-    elseif not remainingSec then
-        remainingSec = 24 * 3600
-    end
-
     local function getWatermarkTitle()
-        local base = options.WatermarkText or windowTitle
-        if remainingSec and remainingSec > 0 then
-            return base .. " | " .. formatDuration(remainingSec)
-        end
-        return base
+        return options.WatermarkText or windowTitle
     end
 
     -- Watermark: toggle button for mobile, standard watermark for PC
-    local wmTextInitial = startHidden and "PRESS ME TO OPEN GUI" or getWatermarkTitle()
+    local wmTextInitial = startHidden and "PRESS ME TO OPEN GUI" or (options.WatermarkText or windowTitle)
     local allowWatermarkClick = options.WatermarkToggle
     if allowWatermarkClick == nil then
         allowWatermarkClick = isMobile -- only mobile users toggle via watermark by default
@@ -1246,24 +1220,13 @@ function Stellar:CreateWindow(options)
         OnClick = allowWatermarkClick and function(wm)
             if startHidden and not visible then
                 startHidden = false
-                wm:SetText(getWatermarkTitle())
+                wm:SetText(options.WatermarkText or windowTitle)
             end
             setVisible(not visible)
         end or nil
     })
 
-    -- Live countdown ticker for watermark
-    task.spawn(function()
-        while true do
-            task.wait(30)
-            if remainingSec and remainingSec > 0 then
-                remainingSec = math.max(0, remainingSec - 30)
-                if not startHidden or visible then
-                    watermark:SetText(getWatermarkTitle())
-                end
-            end
-        end
-    end)
+
 
     -- Notify PC user of keybind upon window initialization
     if not isMobile and options.NotifyKeybind ~= false then
@@ -1279,28 +1242,7 @@ function Stellar:CreateWindow(options)
         end)
     end
 
-    -- Low duration reminder notification toast (<= 10h or <= 3h)
-    if remainingSec and remainingSec > 0 then
-        task.spawn(function()
-            task.wait(0.8)
-            local hoursLeft = remainingSec / 3600
-            if hoursLeft <= 3 then
-                self:Notify({
-                    Title = "⚠️ Whitelist Expiring Soon",
-                    Content = "Your whitelist expires in <b>" .. formatDuration(remainingSec) .. "</b>! Renew via /panel in Discord.",
-                    Duration = 6,
-                    Type = "Warning"
-                })
-            elseif hoursLeft <= 10 then
-                self:Notify({
-                    Title = "Whitelist Duration",
-                    Content = "You have <b>" .. formatDuration(remainingSec) .. "</b> of active whitelist remaining.",
-                    Duration = 5,
-                    Type = "Success"
-                })
-            end
-        end)
-    end
+    -- Timer notifications removed
 
     local activePopup
 
@@ -1784,10 +1726,21 @@ function Stellar:CreateWindow(options)
                         updateToggle(not state)
                     end
 
-                    Stellar:Connect(togBtn.MouseButton1Click, handleToggleClick)
+                    local isDebouncing = false
+                    Stellar:Connect(togBtn.MouseButton1Click, function()
+                        if isDebouncing then return end
+                        isDebouncing = true
+                        handleToggleClick()
+                        task.wait(0.1)
+                        isDebouncing = false
+                    end)
                     Stellar:Connect(togBtn.InputBegan, function(input)
                         if input.UserInputType == Enum.UserInputType.Touch then
+                            if isDebouncing then return end
+                            isDebouncing = true
                             handleToggleClick()
+                            task.wait(0.1)
+                            isDebouncing = false
                         end
                     end)
 
